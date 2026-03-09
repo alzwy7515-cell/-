@@ -5,38 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أحمد الزوي | منصة مستواي الذكية</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script src="https://unpkg.com/tesseract.js@v4.0.1/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        :root { --primary: #3b82f6; --accent: #10b981; --warning: #f59e0b; --bg: #030712; }
+        :root { --primary: #3b82f6; --accent: #10b981; --warning: #f59e0b; --bg: #050a18; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        
-        body { background: var(--bg); color: white; min-height: 100vh; padding: 20px; line-height: 1.6; }
-        
-        .container { max-width: 500px; margin: 0 auto; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 35px; padding: 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
-
-        .header { text-align: center; margin-bottom: 30px; }
-        .logo { width: 70px; height: 70px; background: linear-gradient(135deg, var(--primary), #1d4ed8); border-radius: 20px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; transform: rotate(-10deg); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3); }
-
-        .tool-card { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid transparent; transition: 0.3s; }
-        .tool-card:hover { border-color: var(--primary); background: rgba(255,255,255,0.08); }
-        
-        h2 { font-size: 1.1rem; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        
-        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 12px; border: 1px solid #1e293b; background: #0f172a; color: white; text-align: center; }
-        
-        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        body { background: var(--bg); color: white; min-height: 100vh; padding: 15px; }
+        .container { max-width: 480px; margin: 0 auto; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 35px; padding: 25px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+        .header { text-align: center; margin-bottom: 25px; }
+        .logo { width: 65px; height: 65px; background: linear-gradient(135deg, var(--primary), #1d4ed8); border-radius: 18px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: bold; box-shadow: 0 8px 15px rgba(59, 130, 246, 0.3); }
+        .tool-card { background: rgba(255,255,255,0.05); border-radius: 22px; padding: 18px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        h2 { font-size: 1rem; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        input { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 12px; border: 1px solid #1e293b; background: #0f172a; color: white; text-align: center; }
+        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-accent { background: var(--accent); color: white; }
-        
-        #preview-img { width: 100%; border-radius: 12px; margin-top: 10px; display: none; border: 2px dashed var(--primary); }
-        .status { font-size: 0.8rem; margin-top: 10px; color: var(--warning); text-align: center; }
-
-        .social-links { display: flex; justify-content: center; gap: 20px; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
-        .social-links a { color: white; font-size: 1.5rem; transition: 0.3s; }
-        .social-links a:hover { transform: scale(1.2); color: var(--primary); }
+        .btn-accent { background: var(--accent); color: white; margin-top: 10px; }
+        #preview-img { width: 100%; border-radius: 12px; margin-top: 12px; display: none; border: 2px solid var(--primary); }
+        .status { font-size: 0.85rem; margin-top: 10px; color: var(--warning); text-align: center; background: rgba(245, 158, 11, 0.1); padding: 8px; border-radius: 8px; display: none; }
+        .social-links { display: flex; justify-content: center; gap: 25px; margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .social-links a { color: #94a3b8; font-size: 1.4rem; transition: 0.3s; }
+        .social-links a:hover { color: var(--primary); transform: translateY(-3px); }
     </style>
 </head>
 <body>
@@ -44,33 +34,30 @@
 <div class="container">
     <div class="header">
         <div class="logo">أ ز</div>
-        <h1>مستواي الذكي</h1>
-        <p style="color: #94a3b8; font-size: 0.9rem;">بوابة أحمد الزوي للحلول التعليمية</p>
+        <h1 style="font-size: 1.5rem;">مستواي الذكي</h1>
+        <p style="color: #94a3b8; font-size: 0.85rem;">بوابة م. أحمد الزوي للحلول البرمجية</p>
     </div>
 
     <div class="tool-card">
-        <h2><i class="fas fa-camera"></i> مصحح الأوراق الذكي</h2>
-        <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px;">ارفع صورة ورقة الإجابة لتحليلها بالذكاء الاصطناعي</p>
+        <h2><i class="fas fa-microchip"></i> تحليل الأوراق (الذكاء الاصطناعي)</h2>
         <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)" style="display: none;">
         <button class="btn btn-primary" onclick="document.getElementById('imageInput').click()">
-            <i class="fas fa-upload"></i> اختيار صورة الورقة
+            <i class="fas fa-image"></i> ارفع صورة الورقة
         </button>
         <img id="preview-img" src="#" alt="معاينة">
         <div id="ocr-status" class="status"></div>
-        <button id="scan-btn" class="btn btn-accent" style="margin-top:10px; display:none;" onclick="processImage()">
-            <i class="fas fa-brain"></i> تحليل واستخراج PDF
+        <button id="scan-btn" class="btn btn-accent" style="display:none;" onclick="processImage()">
+            <i class="fas fa-sync-alt"></i> معالجة واستخراج PDF
         </button>
     </div>
 
     <div class="tool-card">
-        <h2><i class="fas fa-calculator"></i> حاسبة المعدل التراكمي</h2>
-        <div id="grade-inputs">
-            <input type="number" class="grade" placeholder="درجة المادة الأولى">
-            <input type="number" class="grade" placeholder="درجة المادة الثانية">
-            <input type="number" class="grade" placeholder="درجة المادة الثالثة">
-        </div>
-        <button class="btn btn-primary" onclick="calculateFinalGPA()">احسب النتيجة النهائية</button>
-        <div id="gpa-result" style="text-align:center; margin-top:15px; font-weight:bold; color:var(--accent);"></div>
+        <h2><i class="fas fa-calculator"></i> حاسبة المعدل السريع</h2>
+        <input type="number" class="grade" placeholder="المادة 1">
+        <input type="number" class="grade" placeholder="المادة 2">
+        <input type="number" class="grade" placeholder="المادة 3">
+        <button class="btn btn-primary" onclick="calculateFinalGPA()">احسب معدلي الآن</button>
+        <div id="gpa-result" style="text-align:center; margin-top:12px; font-weight:bold; color:var(--accent);"></div>
     </div>
 
     <div class="social-links">
@@ -79,12 +66,11 @@
     </div>
 
     <p style="text-align:center; font-size:0.7rem; color:#475569; margin-top:20px;">
-        تم التطوير بواسطة م. أحمد الزوي
+        جميع الحقوق محفوظة © 2026 | أحمد الزوي
     </p>
 </div>
 
 <script>
-    // معاينة الصورة المرفوعة
     function previewImage(event) {
         const reader = new FileReader();
         reader.onload = function(){
@@ -96,59 +82,48 @@
         reader.readAsDataURL(event.target.files[0]);
     }
 
-    // معالجة الصورة بالذكاء الاصطناعي (OCR) وإنشاء PDF
     async function processImage() {
         const status = document.getElementById('ocr-status');
-        const img = document.getElementById('preview-img');
-        status.innerText = "جاري التعرف على النصوص بالذكاء الاصطناعي... انتظر قليلاً";
+        const btn = document.getElementById('scan-btn');
+        status.style.display = 'block';
+        status.innerText = "جاري تشغيل محرك الذكاء الاصطناعي.. (قد يستغرق 30 ثانية لأول مرة)";
+        btn.disabled = true;
 
         try {
-            const result = await Tesseract.recognize(img.src, 'ara+eng');
-            const text = result.data.text;
-            status.innerText = "تم التحليل بنجاح! جاري تحويل النتائج إلى PDF...";
+            // استخدام رابط الـ CDN المباشر لتسريع التحميل
+            const worker = await Tesseract.createWorker();
+            await worker.loadLanguage('ara+eng');
+            await worker.initialize('ara+eng');
             
-            generatePDF(text);
+            status.innerText = "جاري قراءة النصوص من الورقة حالياً..";
+            const { data: { text } } = await worker.recognize(document.getElementById('preview-img').src);
+            
+            await worker.terminate();
+
+            if (text.trim().length < 5) {
+                status.innerText = "النص غير واضح، يرجى تصوير الورقة بشكل أقرب.";
+            } else {
+                status.innerText = "تم التحليل بنجاح! جاري تحميل ملف PDF..";
+                generatePDF(text);
+            }
         } catch (e) {
-            status.innerText = "عذراً، حدث خطأ أثناء المعالجة.";
+            status.innerText = "حدث خطأ في الاتصال بالذكاء الاصطناعي. حاول مرة أخرى.";
+        } finally {
+            btn.disabled = false;
         }
     }
 
-    // إنشاء ملف الـ PDF
     function generatePDF(content) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.setFontSize(16);
-        doc.text("تقرير تصحيح الامتحان - منصة مستواي", 105, 20, { align: "center" });
-        doc.setFontSize(12);
-        doc.text("بواسطة: أحمد الزوي", 10, 30);
-        doc.text("النص المستخرج:", 10, 40);
-        
+        doc.text("تقرير تصحيح - منصة مستواي", 105, 20, { align: "center" });
+        doc.text("النتائج المستخرجة:", 10, 40);
         const splitText = doc.splitTextToSize(content, 180);
         doc.text(splitText, 10, 50);
-        
         doc.save("Mustaway_Report.pdf");
-        document.getElementById('ocr-status').innerText = "تم تحميل ملف PDF بنجاح!";
     }
 
-    // حساب المعدل
     function calculateFinalGPA() {
         const grades = document.querySelectorAll('.grade');
-        let sum = 0;
-        let count = 0;
-        grades.forEach(input => {
-            if(input.value !== "") {
-                sum += parseFloat(input.value);
-                count++;
-            }
-        });
-        if(count > 0) {
-            const avg = (sum / count).toFixed(2);
-            document.getElementById('gpa-result').innerText = "المعدل العام هو: " + avg + "%";
-        } else {
-            alert("يرجى إدخال الدرجات أولاً.");
-        }
-    }
-</script>
-
-</body>
-</html>
+        let sum = 0, count = 0;
+        grades.forEach(input => { if(input.value !== "") { sum += parseFloat(input.value
