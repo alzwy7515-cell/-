@@ -2,33 +2,212 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة مستواي برو | م. أحمد الزوي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>منظومة مستواي PRO | م. أحمد الزوي</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root { --primary: #3b82f6; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #10b981; }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; overflow-x: hidden; }
+        :root { --primary: #3b82f6; --danger: #ef4444; --warning: #f59e0b; --success: #10b981; --bg: #0f172a; --card: #1e293b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: white; line-height: 1.5; overflow-x: hidden; }
 
-        /* القائمة الجانبية الذكية */
-        .sidebar { width: 260px; background: var(--card); border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; position: fixed; height: 100vh; right: 0; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; }
-        .sidebar.closed { right: -260px; }
-        .sidebar-header { padding: 2rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .nav-links { list-style: none; padding: 1rem 0; }
-        .nav-links li { padding: 1rem 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s; color: #94a3b8; font-weight: 500; }
-        .nav-links li:hover, .nav-links li.active { background: rgba(59, 130, 246, 0.15); color: var(--primary); border-right: 4px solid var(--primary); }
+        /* Sidebar & Layout */
+        .sidebar { position: fixed; right: -280px; top: 0; width: 280px; height: 100%; background: var(--card); z-index: 2000; transition: 0.4s; padding: 20px; border-left: 1px solid rgba(255,255,255,0.1); }
+        .sidebar.active { right: 0; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1500; display: none; }
+        .overlay.active { display: block; }
 
-        /* المحتوى الرئيسي المتجاوب */
-        .main-content { margin-right: 260px; flex-grow: 1; padding: 2rem; width: calc(100% - 260px); transition: 0.4s; }
-        .main-content.full { margin-right: 0; width: 100%; }
+        .main-content { padding: 15px; max-width: 100%; margin: auto; padding-top: 70px; }
+        .top-bar { position: fixed; top: 0; right: 0; width: 100%; background: var(--card); padding: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
-        /* زر القائمة للهواتف */
-        .menu-toggle { position: fixed; top: 15px; right: 15px; background: var(--primary); border: none; color: white; padding: 10px; border-radius: 8px; cursor: pointer; display: none; z-index: 1100; }
+        /* UI Elements */
+        .card { background: var(--card); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 14px; }
+        .btn { padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
 
-        /* البطاقات والجداول */
-        .card { background: var(--card); border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        /* Table & Logic Colors */
+        .student-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .fail { color: var(--danger); font-weight: bold; }
+        .need-help { color: var(--warning); }
+        .input-error { border: 2px solid var(--danger) !important; animation: shake 0.3s; }
+
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+
+        /* PDF Area */
+        #pdf-export { background: white; color: black; padding: 40px; width: 900px; position: absolute; left: -9999px; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <h2 style="font-size: 1.1rem; color: var(--primary);">مستواي <span style="color:white">PRO</span></h2>
+        <button onclick="toggleSidebar()" style="background:none; border:none; color:white; font-size: 1.5rem;"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <div class="overlay" onclick="toggleSidebar()"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <h3 style="margin-bottom:20px;">القائمة الرئيسية</h3>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <button class="btn btn-outline" onclick="showSection('auth-page')"><i class="fas fa-user-circle"></i> حسابي</button>
+            <button class="btn btn-outline" onclick="showSection('admin-page')"><i class="fas fa-tasks"></i> إدارة الفصول</button>
+            <button class="btn btn-outline" onclick="showSection('calc-page')"><i class="fas fa-calculator"></i> حاسبة سريعة</button>
+            <button class="btn btn-primary" style="margin-top:20px; background:var(--danger)" onclick="logout()">خروج</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div id="auth-page" class="section active">
+            <div class="card">
+                <h3 id="auth-title">إنشاء حساب جديد</h3>
+                <input type="email" id="reg-email" placeholder="البريد الإلكتروني">
+                <input type="password" id="reg-pass" placeholder="كلمة المرور (يجب أن تشمل أحرف وأرقام)">
+                <small id="pass-msg" style="color:#94a3b8; font-size: 0.7rem;">كلمة السر يجب أن تحتوي على حرف واحد على الأقل.</small>
+                <button class="btn btn-primary" style="margin-top:10px;" onclick="handleRegistration()">تسجيل</button>
+            </div>
+        </div>
+
+        <div id="admin-page" class="section" style="display:none;">
+            <div class="card">
+                <h3>إعدادات الفصل والمادة</h3>
+                <input type="text" id="cls-name" placeholder="اسم الفصل">
+                <select id="grade-type">
+                    <option value="مشاركة">مشاركة يومية</option>
+                    <option value="امتحان نصفي">امتحان نصفي</option>
+                    <option value="امتحان نهائي">امتحان نهائي</option>
+                    <option value="أعمال سنة">أعمال سنة</option>
+                </select>
+                <input type="number" id="max-mark" placeholder="الدرجة العظمى (حسب الوزارة)">
+                <input type="number" id="std-count" placeholder="عدد الطلاب">
+                <button class="btn btn-primary" onclick="createClass()">إنشاء وتوزيع الدرجات</button>
+            </div>
+
+            <div id="classes-list"></div>
+            
+            <button id="export-btn" class="btn btn-primary" style="margin-top:15px; background:var(--success); display:none;" onclick="exportToPDF()">
+                <i class="fas fa-file-pdf"></i> استخراج الكشف التفصيلي PDF
+            </button>
+        </div>
+    </main>
+
+    <div id="pdf-export">
+        <div style="text-align: center; border-bottom: 2px solid black; padding-bottom: 10px;">
+            <h1 style="font-size: 24px;">دولة ليبيا - وزارة التربية والتعليم</h1>
+            <h2 id="pdf-header-title">كشف درجات تفصيلي</h2>
+        </div>
+        <div id="pdf-content" style="margin-top:20px;"></div>
+        <div style="margin-top:50px; display:flex; justify-content: space-between;">
+            <p>المعلم: م. أحمد الزوي</p>
+            <p>التوقيع: .................</p>
+        </div>
+    </div>
+
+    <script>
+        let classes = [];
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.querySelector('.overlay').classList.toggle('active');
+        }
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            toggleSidebar();
+        }
+
+        // منطق كلمة السر (أحرف + أرقام)
+        function handleRegistration() {
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            const hasLetter = /[a-zA-Z]/.test(pass);
+            
+            if(!email || !pass) return alert("يرجى ملء البيانات");
+            if(!hasLetter) return alert("خطأ: كلمة السر يجب أن تحتوي على حروف برمجياً.");
+            
+            alert("تم تسجيل حسابك بنجاح يا بشمهندس أحمد.");
+            showSection('admin-page');
+        }
+
+        function createClass() {
+            const name = document.getElementById('cls-name').value;
+            const type = document.getElementById('grade-type').value;
+            const max = parseFloat(document.getElementById('max-mark').value);
+            const count = parseInt(document.getElementById('std-count').value);
+
+            if(!name || !max || !count) return alert("يرجى إكمال إعدادات الوزارة");
+
+            const newCls = { id: Date.now(), name, type, max, students: [] };
+            for(let i=1; i<=count; i++) {
+                newCls.students.push({ id: i, name: `طالب ${i}`, mark: 0 });
+            }
+            classes.push(newCls);
+            renderClasses();
+            document.getElementById('export-btn').style.display = 'flex';
+        }
+
+        function renderClasses() {
+            const list = document.getElementById('classes-list');
+            list.innerHTML = "";
+            classes.forEach(cls => {
+                let html = `<div class="card">
+                    <h4>فصل: ${cls.name} (${cls.type})</h4>
+                    <p style="font-size:0.7rem; color:var(--primary)">الدرجة العظمى: ${cls.max}</p>
+                    <div style="margin-top:10px;">`;
+                
+                cls.students.forEach(st => {
+                    const statusClass = st.mark < (cls.max/2) ? 'fail' : (st.mark < (cls.max*0.6) ? 'need-help' : '');
+                    html += `<div class="student-row">
+                        <input type="text" value="${st.name}" onchange="updateStd(${cls.id},${st.id},'name',this.value)" style="padding:5px; margin:0;">
+                        <input type="number" class="${st.mark > cls.max ? 'input-error' : ''}" value="${st.mark}" 
+                            onchange="updateStd(${cls.id},${st.id},'mark',this.value)" placeholder="الدرجة">
+                        <span class="${statusClass}" style="font-size:0.7rem;">${st.mark < (cls.max/2) ? 'راسب' : 'ناجح'}</span>
+                    </div>`;
+                });
+                html += `</div></div>`;
+                list.innerHTML += html;
+            });
+        }
+
+        function updateStd(cid, sid, field, val) {
+            const cls = classes.find(c => c.id === cid);
+            const st = cls.students.find(s => s.id === sid);
+            
+            if(field === 'mark') {
+                const numVal = parseFloat(val);
+                if(numVal > cls.max) {
+                    alert(`تنبيه: الدرجة ${numVal} أكبر من الحد الوزاري المسموح (${cls.max})`);
+                    st.mark = cls.max;
+                } else { st.mark = numVal; }
+            } else { st[field] = val; }
+            renderClasses();
+        }
+
+        async function exportToPDF() {
+            const content = document.getElementById('pdf-content');
+            content.innerHTML = "";
+            classes.forEach(cls => {
+                let h = `<h3 style="background:#eee; padding:5px;">فصل: ${cls.name} - نوع التقييم: ${cls.type}</h3>
+                <table border="1" style="width:100%; border-collapse:collapse; text-align:center; margin-bottom:20px;">
+                    <tr style="background:#ddd;"><th>الطالب</th><th>الدرجة (${cls.max})</th><th>الحالة</th></tr>`;
+                cls.students.forEach(st => {
+                    const status = st.mark < (cls.max/2) ? 'يحتاج اهتمام' : 'ناجح';
+                    h += `<tr><td>${st.name}</td><td>${st.mark}</td><td>${status}</td></tr>`;
+                });
+                content.innerHTML += h + `</table>`;
+            });
+
+            const area = document.getElementById('pdf-export');
+            area.style.left = "0";
+            html2canvas(area, {scale: 2}).then(canvas => {
+                const img = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                pdf.addImage(img, 'PNG', 0, 0, 210, (canvas.height*210)/canvas.width);
+                pdf.save(`كشف_درجات_مستواي_${Date.now()}.pdf`);
+                area
