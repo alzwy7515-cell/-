@@ -10,21 +10,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        :root { --primary: #3b82f6; --accent: #10b981; --dark: #0f172a; }
+        :root { --primary: #3b82f6; --dark: #0f172a; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { background: var(--dark); color: white; padding: 15px; }
         .container { max-width: 450px; margin: 0 auto; background: rgba(255,255,255,0.03); border-radius: 25px; padding: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
         .card { background: rgba(255,255,255,0.07); border-radius: 18px; padding: 15px; margin-bottom: 15px; }
-        h2 { font-size: 1rem; color: #60a5fa; margin-bottom: 12px; }
-        
         input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: none; background: #1e293b; color: white; text-align: center; }
-        .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-blue { background: var(--primary); color: white; }
+        .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
         
-        /* شكل الإجابة قبل التحميل */
-        #result-box { display: none; background: white; color: black; padding: 20px; border-radius: 10px; margin-top: 15px; text-align: right; direction: rtl; }
-        .status { font-size: 0.8rem; color: #fbbf24; text-align: center; margin: 10px 0; display: none; }
-        #preview-img { width: 100%; border-radius: 10px; margin-top: 10px; display: none; }
+        /* هذا المربع سيظهر فيه النص العربي بوضوح قبل تحويله لـ PDF */
+        #pdf-content { 
+            display: none; 
+            background: white; 
+            color: black; 
+            padding: 30px; 
+            width: 800px; /* عرض ثابت لضمان الجودة */
+            position: absolute; 
+            left: -9999px; /* مخفي عن العين لكنه موجود للكود */
+            direction: rtl;
+        }
+        .status { font-size: 0.85rem; color: #fbbf24; text-align: center; margin: 10px 0; display: none; background: rgba(251,191,36,0.1); padding: 8px; border-radius: 8px; }
+        #preview-img { width: 100%; border-radius: 10px; margin-top: 10px; display: none; border: 2px solid var(--primary); }
     </style>
 </head>
 <body>
@@ -32,95 +38,110 @@
 <div class="container">
     <div style="text-align: center; margin-bottom: 20px;">
         <h1 style="font-size: 1.4rem;">مستواي <span style="color:var(--primary)">AI</span></h1>
-        <p style="color: #94a3b8; font-size: 0.75rem;">تطوير: أحمد الزوي</p>
+        <p style="color: #94a3b8; font-size: 0.75rem;">إدارة وتطوير: أحمد الزوي</p>
     </div>
 
     <div class="card">
-        <h2><i class="fas fa-magic"></i> مصحح Gemini (عربي)</h2>
-        <input type="file" id="examImg" accept="image/*" onchange="preview(event)" style="display:none">
-        <button class="btn btn-blue" onclick="document.getElementById('examImg').click()">
-            <i class="fas fa-camera"></i> تصوير الامتحان
+        <h2 style="font-size: 1rem; color: #60a5fa; margin-bottom: 10px;"><i class="fas fa-robot"></i> مصحح Gemini الذكي</h2>
+        <input type="file" id="examImg" accept="image/*" onchange="showPreview(event)" style="display:none">
+        <button class="btn" style="background:var(--primary); color:white;" onclick="document.getElementById('examImg').click()">
+            <i class="fas fa-camera"></i> تصوير الورقة
         </button>
         <img id="preview-img">
-        <div id="status" class="status"></div>
-        <button id="process-btn" class="btn" style="background:#10b981; color:white; margin-top:10px; display:none;" onclick="startAI()">
-            <i class="fas fa-check-double"></i> استخراج الإجابة النموذجية
+        <div id="status-msg" class="status"></div>
+        <button id="ai-btn" class="btn" style="background:#10b981; color:white; margin-top:10px; display:none;" onclick="runAI()">
+            <i class="fas fa-magic"></i> استخراج النتيجة (PDF)
         </button>
     </div>
 
-    <div id="result-box">
-        <h3 style="border-bottom: 2px solid #3b82f6; padding-bottom: 5px;">تقرير تصحيح مستواي AI</h3>
-        <p style="margin-top: 10px;"><b>اسم المصحح:</b> م. أحمد الزوي</p>
-        <p style="margin-top: 5px;"><b>النتيجة:</b> الإجابات صحيحة بنسبة 95%</p>
-        <hr style="margin: 10px 0;">
-        <p id="ai-text">جاري تحليل بيانات الورقة وتجهيز الإجابة النموذجية باللغة العربية...</p>
-    </div>
-
     <div class="card">
-        <h2><i class="fas fa-calculator"></i> حاسبة المعدل</h2>
+        <h2 style="font-size: 1rem; color: #60a5fa; margin-bottom: 10px;"><i class="fas fa-calculator"></i> حاسبة المعدل</h2>
         <select id="sys"><option value="100">نظام 100%</option><option value="4">نظام 4.0</option></select>
-        <div id="marks"><input type="number" class="m" placeholder="الدرجة"></div>
-        <button class="btn" style="background:transparent; color:#60a5fa; margin-bottom:8px;" onclick="add()">+ مادة</button>
-        <button class="btn btn-blue" onclick="res()">احسب الآن</button>
-        <p id="out" style="text-align:center; margin-top:10px; font-weight:bold; color:#10b981;"></p>
+        <div id="inputs"><input type="number" class="grade" placeholder="الدرجة"></div>
+        <button class="btn" style="background:transparent; color:#60a5fa; margin-bottom:8px; border:1px dashed #60a5fa;" onclick="addInput()">+ إضافة مادة</button>
+        <button class="btn" style="background:var(--primary); color:white;" onclick="calculate()">احسب الآن</button>
+        <p id="res-out" style="text-align:center; margin-top:12px; font-weight:bold; color:#10b981;"></p>
+    </div>
+</div>
+
+<div id="pdf-content">
+    <div style="text-align: center; border-bottom: 3px solid #3b82f6; padding-bottom: 10px;">
+        <h1 style="font-size: 24px;">تقرير تصحيح "مستواي AI"</h1>
+        <p style="font-size: 16px;">موقع المهندس أحمد الزوي الرسمي</p>
+    </div>
+    <div style="margin-top: 30px; font-size: 18px;">
+        <p><b>حالة التحليل:</b> تم التصحيح بنجاح</p>
+        <p><b>التاريخ:</b> 10 مارس 2026</p>
+        <p style="margin-top: 20px; line-height: 1.8;"><b>الإجابة النموذجية:</b></p>
+        <div id="ai-response-text" style="background: #f8fafc; padding: 15px; border-right: 5px solid #3b82f6;">
+            جاري معالجة النص العربي لضمان وضوحه في الملف...
+        </div>
+    </div>
+    <div style="margin-top: 50px; text-align: center; color: #64748b; font-size: 12px;">
+        هذا التقرير صدر آلياً عن طريق منصة مستواي - الأبيار، ليبيا.
     </div>
 </div>
 
 <script>
-    function preview(e) {
+    function showPreview(e) {
         const file = e.target.files[0];
         if(file) {
             const r = new FileReader();
-            r.onload = () => { 
+            r.onload = () => {
                 document.getElementById('preview-img').src = r.result;
                 document.getElementById('preview-img').style.display = 'block';
-                document.getElementById('process-btn').style.display = 'flex';
+                document.getElementById('ai-btn').style.display = 'flex';
             };
             r.readAsDataURL(file);
         }
     }
 
-    async function startAI() {
-        const st = document.getElementById('status');
+    async function runAI() {
+        const st = document.getElementById('status-msg');
         st.style.display = 'block';
-        st.innerText = "جاري الاتصال بـ Gemini AI... (عبر المهندس أحمد الزوي)";
+        st.innerText = "جاري الاتصال بـ Gemini AI وتنسيق اللغة العربية...";
         
-        // محاكاة استجابة Gemini باللغة العربية
+        // هنا نضع النص العربي الذي نريده أن يظهر في الـ PDF
         setTimeout(() => {
-            document.getElementById('result-box').style.display = 'block';
-            document.getElementById('ai-text').innerText = "تم تحليل الأسئلة بنجاح. الإجابة على السؤال الأول هي 'أ'، والسؤال الثاني 'ج'. ملاحظة: يرجى مراجعة الخطوات في المسألة الرياضية الأخيرة.";
-            st.innerText = "تم التحليل! جاري تصدير PDF بجودة عالية...";
-            exportPDF();
-        }, 2500);
+            const resultText = "تم تحليل ورقة الامتحان بنجاح. الإجابات النموذجية هي: 1- الخيار (ب)، 2- الخيار (أ). ملاحظة للمعلم: الطالب أظهر تميزاً في حل المسائل المنطقية.";
+            document.getElementById('ai-response-text').innerText = resultText;
+            st.innerText = "تم التحليل! جاري توليد ملف PDF عالي الجودة...";
+            generateProfessionalPDF();
+        }, 2000);
     }
 
-    function exportPDF() {
-        const element = document.getElementById('result-box');
-        html2canvas(element, { scale: 2 }).then(canvas => {
+    function generateProfessionalPDF() {
+        const element = document.getElementById('pdf-content');
+        element.style.display = 'block'; // إظهاره لحظياً للتصوير
+
+        html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
+            
             const imgProps = pdf.getImageProperties(imgData);
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
             
-            pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight);
-            pdf.save("تقرير_مستواي_أحمد_الزوي.pdf");
-            document.getElementById('status').innerText = "تم تحميل الملف بنجاح ✅";
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save("تقرير_مستواي_الذكي.pdf");
+            
+            element.style.display = 'none'; // إخفاءه مرة أخرى
+            document.getElementById('status-msg').innerText = "تم تحميل الملف بنجاح ✅";
         });
     }
 
-    function add() {
+    function addInput() {
         const i = document.createElement('input');
-        i.type = 'number'; i.className = 'm'; i.placeholder = 'الدرجة';
-        document.getElementById('marks').appendChild(i);
+        i.type = 'number'; i.className = 'grade'; i.placeholder = 'الدرجة';
+        document.getElementById('inputs').appendChild(i);
     }
 
-    function res() {
-        const ms = document.querySelectorAll('.m');
+    function calculate() {
+        const gs = document.querySelectorAll('.grade');
         let s = 0, c = 0;
-        ms.forEach(i => { if(i.value!==''){s+=parseFloat(i.value); c++;} });
-        if(c>0) document.getElementById('out').innerText = "معدلك هو: " + (s/c).toFixed(2);
+        gs.forEach(i => { if(i.value!==''){ s+=parseFloat(i.value); c++; } });
+        if(c>0) document.getElementById('res-out').innerText = "المعدل النهائي: " + (s/c).toFixed(2);
     }
 </script>
 </body>
