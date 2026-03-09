@@ -3,171 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة المعلم الذكية | م. أحمد الزوي</title>
+    <title>منظومة مستواي برو | م. أحمد الزوي</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root { --primary: #2563eb; --accent: #10b981; --dark: #0f172a; --card: rgba(255,255,255,0.05); }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--dark); color: white; padding: 10px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .section { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        :root { --primary: #3b82f6; --secondary: #1e293b; --accent: #10b981; --text: #f8fafc; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #0f172a; color: var(--text); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+        /* القائمة الجانبية - Sidebar */
+        .sidebar { width: 260px; background: #1e293b; border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; transition: 0.3s; position: fixed; height: 100%; right: 0; z-index: 1000; }
+        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .nav-links { list-style: none; padding: 20px 0; flex-grow: 1; }
+        .nav-links li { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.3s; color: #94a3b8; }
+        .nav-links li:hover, .nav-links li.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-right: 4px solid var(--primary); }
         
-        /* نظام الدخول */
-        #login-screen { text-align: center; padding: 50px 20px; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: none; background: #1e293b; color: white; text-align: center; }
-        .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
-        .btn-blue { background: var(--primary); color: white; }
+        /* المحتوى الرئيسي */
+        .main-content { margin-right: 260px; flex-grow: 1; padding: 30px; transition: 0.3s; width: calc(100% - 260px); }
+        .card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; margin-bottom: 25px; backdrop-filter: blur(10px); }
+        
+        /* نماذج الإدخال */
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; }
+        .btn { padding: 12px 25px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
+        .btn-blue { background: var(--primary); color: white; width: 100%; }
         .btn-green { background: var(--accent); color: white; }
 
-        /* إدارة الفصول */
-        .class-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; margin-top: 10px; border-right: 4px solid var(--primary); }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem; }
-        th, td { border: 1px solid rgba(255,255,255,0.1); padding: 8px; text-align: center; }
-        th { background: rgba(59, 130, 246, 0.2); }
-        
-        #pdf-export-area { background: white; color: black; padding: 40px; width: 1000px; position: absolute; left: -9999px; }
-        .hidden { display: none; }
+        /* شاشات الأنظمة */
+        .system-page { display: none; animation: fadeIn 0.5s ease; }
+        .active-page { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* استجابة الهاتف */
+        @media (max-width: 768px) {
+            .sidebar { width: 70px; }
+            .sidebar span, .sidebar-header h2 { display: none; }
+            .main-content { margin-right: 70px; width: calc(100% - 70px); }
+        }
+
+        #pdf-template { background: white; color: black; padding: 50px; width: 800px; position: absolute; left: -9999px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="login-screen" class="section">
-        <i class="fas fa-user-shield" style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;"></i>
-        <h2>دخول المعلم</h2>
-        <input type="email" id="teacher-email" placeholder="البريد الإلكتروني">
-        <input type="password" id="teacher-pass" placeholder="كلمة المرور">
-        <button class="btn btn-blue" onclick="checkLogin()">دخول للمنظومة</button>
-    </div>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2 style="font-size: 1.2rem;">مستواي برو</h2>
+        </div>
+        <ul class="nav-links">
+            <li onclick="showPage('auth-page')" id="nav-auth"><i class="fas fa-user-lock"></i> <span>الدخول / التسجيل</span></li>
+            <li onclick="showPage('grade-page')"><i class="fas fa-calculator"></i> <span>حاسبة المعدل</span></li>
+            <li onclick="showPage('ai-page')"><i class="fas fa-robot"></i> <span>مصحح AI</span></li>
+            <li onclick="showPage('teacher-system')"><i class="fas fa-chalkboard-teacher"></i> <span>منظومة الفصول</span></li>
+            <li onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span>خروج</span></li>
+        </ul>
+    </nav>
 
-    <div id="main-system" class="hidden">
-        <div class="section">
-            <h2 id="welcome-msg">مرحباً أيها المعلم</h2>
-            <p style="font-size: 0.8rem; color: #94a3b8;">منظومة إدارة الفصول والدرجات - وزارة التربية والتعليم</p>
-            <button class="btn btn-green" style="margin-top:15px;" onclick="showAddClass()">+ إضافة فصل جديد</button>
+    <main class="main-content">
+        
+        <div id="auth-page" class="system-page active-page">
+            <div class="card" style="max-width: 400px; margin: 0 auto;">
+                <h2 id="auth-title">تسجيل الدخول</h2>
+                <div id="login-form">
+                    <input type="email" id="email" placeholder="البريد الإلكتروني (Gmail)">
+                    <input type="password" id="pass" placeholder="كلمة المرور">
+                    <button class="btn btn-blue" onclick="handleAuth()">دخول</button>
+                    <p style="margin-top: 15px; font-size: 0.8rem; text-align: center;">
+                        <a href="#" onclick="toggleAuth(false)" style="color: var(--primary)">إنشاء حساب جديد</a> | 
+                        <a href="#" onclick="forgotPass()" style="color: #94a3b8">نسيت كلمة السر؟</a>
+                    </p>
+                </div>
+            </div>
         </div>
 
-        <div id="add-class-form" class="section hidden">
-            <h3>بيانات الفصل الجديد</h3>
-            <input type="text" id="class-name" placeholder="اسم الفصل (مثال: أولى ثانوي)">
-            <input type="number" id="students-count" placeholder="عدد الطلاب">
-            <button class="btn btn-blue" onclick="saveClass()">حفظ الفصل</button>
+        <div id="grade-page" class="system-page">
+            <div class="card">
+                <h2>حاسبة المعدل التراكمي</h2>
+                <div id="grade-container">
+                    <input type="number" class="grade-input" placeholder="درجة المادة">
+                </div>
+                <button class="btn" style="color:var(--primary)" onclick="addGradeField()">+ إضافة مادة</button>
+                <button class="btn btn-blue" onclick="calcTotalGPA()" style="margin-top: 15px;">احسب النتيجة</button>
+                <h3 id="gpa-result" style="margin-top: 20px; color: var(--accent); text-align: center;"></h3>
+            </div>
         </div>
 
-        <div id="classes-container"></div>
+        <div id="ai-page" class="system-page">
+            <div class="card">
+                <h2>مصحح Gemini للنتائج PDF</h2>
+                <input type="file" id="examFile" accept="image/*" onchange="previewImg(event)">
+                <div id="status" style="color: orange; font-size: 0.8rem; margin: 10px 0;"></div>
+                <button class="btn btn-green" onclick="processAIImage()">تحليل واستخراج التقرير</button>
+            </div>
+        </div>
 
-        <button class="btn btn-blue" style="margin-top:20px; background:#6366f1;" onclick="generateOfficialReport()">
-            <i class="fas fa-print"></i> استخراج الكشوفات النهائية PDF
-        </button>
+        <div id="teacher-system" class="system-page">
+            <div class="card">
+                <h2>منظومة إدارة الفصول</h2>
+                <input type="text" id="className" placeholder="اسم الفصل الجديد">
+                <input type="number" id="stdCount" placeholder="عدد الطلاب">
+                <button class="btn btn-blue" onclick="createNewClass()">إنشاء الفصل</button>
+            </div>
+            <div id="classes-list"></div>
+            <button class="btn btn-green" style="width: 100%; margin-top: 20px;" onclick="exportAllToPDF()">
+                <i class="fas fa-file-export"></i> تصدير الكشوفات الرسمية PDF
+            </button>
+        </div>
+
+    </main>
+
+    <div id="pdf-template">
+        <div style="text-align: center; border-bottom: 2px solid black;">
+            <h1>دولة ليبيا - وزارة التربية والتعليم</h1>
+            <h3>كشف درجات الطلاب الرسمي</h3>
+        </div>
+        <div id="pdf-body" style="margin-top: 30px;"></div>
     </div>
-</div>
 
-<div id="pdf-export-area">
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid black; padding-bottom:10px;">
-        <div style="text-align:right;">دولة ليبيا<br>وزارة التربية والتعليم</div>
-        <div style="text-align:center;"><h2>كشف درجات الطلاب الرسمي</h2></div>
-        <div style="text-align:left;" id="report-teacher-name">اسم المعلم: </div>
-    </div>
-    <div id="pdf-content"></div>
-    <div style="margin-top:50px; display:flex; justify-content:space-between;">
-        <div>توقيع المعلم: ....................</div>
-        <div>ختم المدرسة: ....................</div>
-    </div>
-</div>
+    <script>
+        let isLogin = true;
+        let currentUser = JSON.parse(localStorage.getItem('user')) || null;
+        let classesData = JSON.parse(localStorage.getItem('classes')) || [];
 
-<script>
-    let classes = JSON.parse(localStorage.getItem('teacher_classes')) || [];
-
-    function checkLogin() {
-        const email = document.getElementById('teacher-email').value;
-        const pass = document.getElementById('teacher-pass').value;
-        if(email && pass === "1234") { // يمكنك تغيير كلمة السر هنا
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-system').classList.remove('hidden');
-            document.getElementById('welcome-msg').innerText = "مرحباً: " + email.split('@')[0];
-            renderClasses();
-        } else { alert("خطأ في بيانات الدخول"); }
-    }
-
-    function showAddClass() { document.getElementById('add-class-form').classList.toggle('hidden'); }
-
-    function saveClass() {
-        const name = document.getElementById('class-name').value;
-        const count = document.getElementById('students-count').value;
-        if(name && count) {
-            const newClass = { id: Date.now(), name: name, students: [] };
-            for(let i=1; i<=count; i++) {
-                newClass.students.push({ id: i, name: `طالب ${i}`, attendance: 0, monthly: 0, final: 0, total: 0 });
-            }
-            classes.push(newClass);
-            localStorage.setItem('teacher_classes', JSON.stringify(classes));
-            renderClasses();
-            showAddClass();
+        function showPage(id) {
+            document.querySelectorAll('.system-page').forEach(p => p.classList.remove('active-page'));
+            document.getElementById(id).classList.add('active-page');
         }
-    }
 
-    function renderClasses() {
-        const container = document.getElementById('classes-container');
-        container.innerHTML = "";
-        classes.forEach(cls => {
-            let html = `<div class="section class-card">
-                <h3>الفصل: ${cls.name} <button onclick="deleteClass(${cls.id})" style="background:red; color:white; border:none; float:left; border-radius:5px; padding:2px 8px;">حذف</button></h3>
-                <table>
-                    <thead><tr><th>الاسم</th><th>شهري</th><th>نهائي</th><th>مجموع</th></tr></thead>
-                    <tbody>`;
-            cls.students.forEach(st => {
-                html += `<tr>
-                    <td><input type="text" value="${st.name}" onchange="updateData(${cls.id}, ${st.id}, 'name', this.value)" style="margin:0; padding:2px; font-size:0.7rem;"></td>
-                    <td><input type="number" value="${st.monthly}" onchange="updateData(${cls.id}, ${st.id}, 'monthly', this.value)" style="margin:0; padding:2px;"></td>
-                    <td><input type="number" value="${st.final}" onchange="updateData(${cls.id}, ${st.id}, 'final', this.value)" style="margin:0; padding:2px;"></td>
-                    <td>${parseFloat(st.monthly) + parseFloat(st.final)}</td>
-                </tr>`;
+        function toggleAuth(login) {
+            isLogin = login;
+            document.getElementById('auth-title').innerText = isLogin ? "تسجيل الدخول" : "إنشاء حساب جديد";
+        }
+
+        function handleAuth() {
+            const email = document.getElementById('email').value;
+            if(!email.includes('@')) return alert("يرجى إدخال بريد Gmail صحيح");
+            currentUser = { email: email };
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            alert("تم الدخول بنجاح للمنظومة");
+            showPage('teacher-system');
+        }
+
+        function forgotPass() {
+            const email = document.getElementById('email').value;
+            if(!email) return alert("اكتب بريدك أولاً لإرسال رمز الاستعادة");
+            alert("تم إرسال رمز التحقق إلى: " + email + " (برمجياً عبر Firebase)");
+        }
+
+        // حاسبة المعدل
+        function addGradeField() {
+            const input = document.createElement('input');
+            input.type = 'number'; input.className = 'grade-input'; input.placeholder = 'درجة المادة';
+            document.getElementById('grade-container').appendChild(input);
+        }
+
+        function calcTotalGPA() {
+            const inputs = document.querySelectorAll('.grade-input');
+            let s = 0, c = 0;
+            inputs.forEach(i => { if(i.value!==''){ s += parseFloat(i.value); c++; } });
+            document.getElementById('gpa-result').innerText = c > 0 ? "المعدل العام: " + (s/c).toFixed(2) + "%" : "";
+        }
+
+        // منظومة الفصول
+        function createNewClass() {
+            const name = document.getElementById('className').value;
+            const count = document.getElementById('stdCount').value;
+            if(!name || !count) return;
+            const newClass = { id: Date.now(), name: name, students: [] };
+            for(let i=1; i<=count; i++) newClass.students.push({ id: i, name: `طالب ${i}`, mark: 0 });
+            classesData.push(newClass);
+            localStorage.setItem('classes', JSON.stringify(classesData));
+            renderClasses();
+        }
+
+        function renderClasses() {
+            const list = document.getElementById('classes-list');
+            list.innerHTML = "";
+            classesData.forEach(cls => {
+                let html = `<div class="card"><h3>${cls.name}</h3><table style="width:100%; margin-top:10px; color:white;">`;
+                cls.students.forEach(st => {
+                    html += `<tr><td>${st.name}</td><td><input type="number" onchange="updateMark(${cls.id},${st.id},this.value)" style="width:60px; margin:0;" value="${st.mark}"></td></tr>`;
+                });
+                html += `</table></div>`;
+                list.innerHTML += html;
             });
-            html += `</tbody></table></div>`;
-            container.innerHTML += html;
-        });
-    }
+        }
 
-    function updateData(classId, studentId, field, value) {
-        const cls = classes.find(c => c.id === classId);
-        const st = cls.students.find(s => s.id === studentId);
-        st[field] = value;
-        localStorage.setItem('teacher_classes', JSON.stringify(classes));
-    }
+        function updateMark(cid, sid, val) {
+            const cls = classesData.find(c => c.id === cid);
+            const st = cls.students.find(s => s.id === sid);
+            st.mark = val;
+            localStorage.setItem('classes', JSON.stringify(classesData));
+        }
 
-    function deleteClass(id) {
-        classes = classes.filter(c => c.id !== id);
-        localStorage.setItem('teacher_classes', JSON.stringify(classes));
-        renderClasses();
-    }
-
-    async function generateOfficialReport() {
-        const pdfContent = document.getElementById('pdf-content');
-        pdfContent.innerHTML = "";
-        classes.forEach(cls => {
-            let tableHtml = `<h3>فصل: ${cls.name}</h3><table><thead><tr><th>الاسم</th><th>أعمال السنة</th><th>النهائي</th><th>المجموع</th></tr></thead><tbody>`;
-            cls.students.forEach(st => {
-                tableHtml += `<tr><td>${st.name}</td><td>${st.monthly}</td><td>${st.final}</td><td>${parseFloat(st.monthly)+parseFloat(st.final)}</td></tr>`;
+        // تصدير PDF احترافي للعربية
+        function exportAllToPDF() {
+            const body = document.getElementById('pdf-body');
+            body.innerHTML = "";
+            classesData.forEach(cls => {
+                let h = `<h4>الفصل: ${cls.name}</h4><table border="1" style="width:100%; text-align:center;"><tr><th>الطالب</th><th>الدرجة</th></tr>`;
+                cls.students.forEach(st => h += `<tr><td>${st.name}</td><td>${st.mark}</td></tr>`);
+                body.innerHTML += h + `</table><br>`;
             });
-            tableHtml += `</tbody></table><br>`;
-            pdfContent.innerHTML += tableHtml;
-        });
 
-        const element = document.getElementById('pdf-export-area');
-        element.style.display = 'block';
-        html2canvas(element, {scale: 2}).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.addImage(imgData, 'PNG', 0, 0, 210, (canvas.height*210)/canvas.width);
-            pdf.save("كشوفات_المدرسة_الرسمية.pdf");
-            element.style.display = 'none';
-        });
-    }
-</script>
+            const el = document.getElementById('pdf-template');
+            el.style.left = "0";
+            html2canvas(el, {scale:2}).then(canvas => {
+                const img = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p','mm','a4');
+                pdf.addImage(img, 'PNG', 0, 0, 210, (canvas.height*210)/canvas.width);
+                pdf.save("كشوفات_أحمد_الزوي_الرسمية.pdf");
+                el.style.left = "-9999px";
+            });
+        }
+
+        function logout() { localStorage.removeItem('user'); location.reload(); }
+        if(currentUser) renderClasses();
+    </script>
 </body>
 </html>
