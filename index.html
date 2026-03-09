@@ -10,219 +10,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root { --primary: #3b82f6; --secondary: #1e293b; --accent: #10b981; --text: #f8fafc; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #0f172a; color: var(--text); display: flex; min-height: 100vh; overflow-x: hidden; }
-
-        /* القائمة الجانبية - Sidebar */
-        .sidebar { width: 260px; background: #1e293b; border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; transition: 0.3s; position: fixed; height: 100%; right: 0; z-index: 1000; }
-        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .nav-links { list-style: none; padding: 20px 0; flex-grow: 1; }
-        .nav-links li { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.3s; color: #94a3b8; }
-        .nav-links li:hover, .nav-links li.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-right: 4px solid var(--primary); }
+        :root { --primary: #3b82f6; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #10b981; }
         
-        /* المحتوى الرئيسي */
-        .main-content { margin-right: 260px; flex-grow: 1; padding: 30px; transition: 0.3s; width: calc(100% - 260px); }
-        .card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; margin-bottom: 25px; backdrop-filter: blur(10px); }
-        
-        /* نماذج الإدخال */
-        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; }
-        .btn { padding: 12px 25px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
-        .btn-blue { background: var(--primary); color: white; width: 100%; }
-        .btn-green { background: var(--accent); color: white; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; overflow-x: hidden; }
 
-        /* شاشات الأنظمة */
-        .system-page { display: none; animation: fadeIn 0.5s ease; }
-        .active-page { display: block; }
+        /* القائمة الجانبية الذكية */
+        .sidebar { width: 260px; background: var(--card); border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; position: fixed; height: 100vh; right: 0; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; }
+        .sidebar.closed { right: -260px; }
+        .sidebar-header { padding: 2rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .nav-links { list-style: none; padding: 1rem 0; }
+        .nav-links li { padding: 1rem 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s; color: #94a3b8; font-weight: 500; }
+        .nav-links li:hover, .nav-links li.active { background: rgba(59, 130, 246, 0.15); color: var(--primary); border-right: 4px solid var(--primary); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* المحتوى الرئيسي المتجاوب */
+        .main-content { margin-right: 260px; flex-grow: 1; padding: 2rem; width: calc(100% - 260px); transition: 0.4s; }
+        .main-content.full { margin-right: 0; width: 100%; }
 
-        /* استجابة الهاتف */
-        @media (max-width: 768px) {
-            .sidebar { width: 70px; }
-            .sidebar span, .sidebar-header h2 { display: none; }
-            .main-content { margin-right: 70px; width: calc(100% - 70px); }
-        }
+        /* زر القائمة للهواتف */
+        .menu-toggle { position: fixed; top: 15px; right: 15px; background: var(--primary); border: none; color: white; padding: 10px; border-radius: 8px; cursor: pointer; display: none; z-index: 1100; }
 
-        #pdf-template { background: white; color: black; padding: 50px; width: 800px; position: absolute; left: -9999px; }
-    </style>
-</head>
-<body>
-
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h2 style="font-size: 1.2rem;">مستواي برو</h2>
-        </div>
-        <ul class="nav-links">
-            <li onclick="showPage('auth-page')" id="nav-auth"><i class="fas fa-user-lock"></i> <span>الدخول / التسجيل</span></li>
-            <li onclick="showPage('grade-page')"><i class="fas fa-calculator"></i> <span>حاسبة المعدل</span></li>
-            <li onclick="showPage('ai-page')"><i class="fas fa-robot"></i> <span>مصحح AI</span></li>
-            <li onclick="showPage('teacher-system')"><i class="fas fa-chalkboard-teacher"></i> <span>منظومة الفصول</span></li>
-            <li onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span>خروج</span></li>
-        </ul>
-    </nav>
-
-    <main class="main-content">
-        
-        <div id="auth-page" class="system-page active-page">
-            <div class="card" style="max-width: 400px; margin: 0 auto;">
-                <h2 id="auth-title">تسجيل الدخول</h2>
-                <div id="login-form">
-                    <input type="email" id="email" placeholder="البريد الإلكتروني (Gmail)">
-                    <input type="password" id="pass" placeholder="كلمة المرور">
-                    <button class="btn btn-blue" onclick="handleAuth()">دخول</button>
-                    <p style="margin-top: 15px; font-size: 0.8rem; text-align: center;">
-                        <a href="#" onclick="toggleAuth(false)" style="color: var(--primary)">إنشاء حساب جديد</a> | 
-                        <a href="#" onclick="forgotPass()" style="color: #94a3b8">نسيت كلمة السر؟</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div id="grade-page" class="system-page">
-            <div class="card">
-                <h2>حاسبة المعدل التراكمي</h2>
-                <div id="grade-container">
-                    <input type="number" class="grade-input" placeholder="درجة المادة">
-                </div>
-                <button class="btn" style="color:var(--primary)" onclick="addGradeField()">+ إضافة مادة</button>
-                <button class="btn btn-blue" onclick="calcTotalGPA()" style="margin-top: 15px;">احسب النتيجة</button>
-                <h3 id="gpa-result" style="margin-top: 20px; color: var(--accent); text-align: center;"></h3>
-            </div>
-        </div>
-
-        <div id="ai-page" class="system-page">
-            <div class="card">
-                <h2>مصحح Gemini للنتائج PDF</h2>
-                <input type="file" id="examFile" accept="image/*" onchange="previewImg(event)">
-                <div id="status" style="color: orange; font-size: 0.8rem; margin: 10px 0;"></div>
-                <button class="btn btn-green" onclick="processAIImage()">تحليل واستخراج التقرير</button>
-            </div>
-        </div>
-
-        <div id="teacher-system" class="system-page">
-            <div class="card">
-                <h2>منظومة إدارة الفصول</h2>
-                <input type="text" id="className" placeholder="اسم الفصل الجديد">
-                <input type="number" id="stdCount" placeholder="عدد الطلاب">
-                <button class="btn btn-blue" onclick="createNewClass()">إنشاء الفصل</button>
-            </div>
-            <div id="classes-list"></div>
-            <button class="btn btn-green" style="width: 100%; margin-top: 20px;" onclick="exportAllToPDF()">
-                <i class="fas fa-file-export"></i> تصدير الكشوفات الرسمية PDF
-            </button>
-        </div>
-
-    </main>
-
-    <div id="pdf-template">
-        <div style="text-align: center; border-bottom: 2px solid black;">
-            <h1>دولة ليبيا - وزارة التربية والتعليم</h1>
-            <h3>كشف درجات الطلاب الرسمي</h3>
-        </div>
-        <div id="pdf-body" style="margin-top: 30px;"></div>
-    </div>
-
-    <script>
-        let isLogin = true;
-        let currentUser = JSON.parse(localStorage.getItem('user')) || null;
-        let classesData = JSON.parse(localStorage.getItem('classes')) || [];
-
-        function showPage(id) {
-            document.querySelectorAll('.system-page').forEach(p => p.classList.remove('active-page'));
-            document.getElementById(id).classList.add('active-page');
-        }
-
-        function toggleAuth(login) {
-            isLogin = login;
-            document.getElementById('auth-title').innerText = isLogin ? "تسجيل الدخول" : "إنشاء حساب جديد";
-        }
-
-        function handleAuth() {
-            const email = document.getElementById('email').value;
-            if(!email.includes('@')) return alert("يرجى إدخال بريد Gmail صحيح");
-            currentUser = { email: email };
-            localStorage.setItem('user', JSON.stringify(currentUser));
-            alert("تم الدخول بنجاح للمنظومة");
-            showPage('teacher-system');
-        }
-
-        function forgotPass() {
-            const email = document.getElementById('email').value;
-            if(!email) return alert("اكتب بريدك أولاً لإرسال رمز الاستعادة");
-            alert("تم إرسال رمز التحقق إلى: " + email + " (برمجياً عبر Firebase)");
-        }
-
-        // حاسبة المعدل
-        function addGradeField() {
-            const input = document.createElement('input');
-            input.type = 'number'; input.className = 'grade-input'; input.placeholder = 'درجة المادة';
-            document.getElementById('grade-container').appendChild(input);
-        }
-
-        function calcTotalGPA() {
-            const inputs = document.querySelectorAll('.grade-input');
-            let s = 0, c = 0;
-            inputs.forEach(i => { if(i.value!==''){ s += parseFloat(i.value); c++; } });
-            document.getElementById('gpa-result').innerText = c > 0 ? "المعدل العام: " + (s/c).toFixed(2) + "%" : "";
-        }
-
-        // منظومة الفصول
-        function createNewClass() {
-            const name = document.getElementById('className').value;
-            const count = document.getElementById('stdCount').value;
-            if(!name || !count) return;
-            const newClass = { id: Date.now(), name: name, students: [] };
-            for(let i=1; i<=count; i++) newClass.students.push({ id: i, name: `طالب ${i}`, mark: 0 });
-            classesData.push(newClass);
-            localStorage.setItem('classes', JSON.stringify(classesData));
-            renderClasses();
-        }
-
-        function renderClasses() {
-            const list = document.getElementById('classes-list');
-            list.innerHTML = "";
-            classesData.forEach(cls => {
-                let html = `<div class="card"><h3>${cls.name}</h3><table style="width:100%; margin-top:10px; color:white;">`;
-                cls.students.forEach(st => {
-                    html += `<tr><td>${st.name}</td><td><input type="number" onchange="updateMark(${cls.id},${st.id},this.value)" style="width:60px; margin:0;" value="${st.mark}"></td></tr>`;
-                });
-                html += `</table></div>`;
-                list.innerHTML += html;
-            });
-        }
-
-        function updateMark(cid, sid, val) {
-            const cls = classesData.find(c => c.id === cid);
-            const st = cls.students.find(s => s.id === sid);
-            st.mark = val;
-            localStorage.setItem('classes', JSON.stringify(classesData));
-        }
-
-        // تصدير PDF احترافي للعربية
-        function exportAllToPDF() {
-            const body = document.getElementById('pdf-body');
-            body.innerHTML = "";
-            classesData.forEach(cls => {
-                let h = `<h4>الفصل: ${cls.name}</h4><table border="1" style="width:100%; text-align:center;"><tr><th>الطالب</th><th>الدرجة</th></tr>`;
-                cls.students.forEach(st => h += `<tr><td>${st.name}</td><td>${st.mark}</td></tr>`);
-                body.innerHTML += h + `</table><br>`;
-            });
-
-            const el = document.getElementById('pdf-template');
-            el.style.left = "0";
-            html2canvas(el, {scale:2}).then(canvas => {
-                const img = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p','mm','a4');
-                pdf.addImage(img, 'PNG', 0, 0, 210, (canvas.height*210)/canvas.width);
-                pdf.save("كشوفات_أحمد_الزوي_الرسمية.pdf");
-                el.style.left = "-9999px";
-            });
-        }
-
-        function logout() { localStorage.removeItem('user'); location.reload(); }
-        if(currentUser) renderClasses();
-    </script>
-</body>
-</html>
+        /* البطاقات والجداول */
+        .card { background: var(--card); border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
