@@ -3,145 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة مستواي AI | المهندس أحمد الزوي</title>
+    <title>منظومة المعلم الذكية | م. أحمد الزوي</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        :root { --primary: #3b82f6; --dark: #0f172a; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background: var(--dark); color: white; padding: 15px; }
-        .container { max-width: 450px; margin: 0 auto; background: rgba(255,255,255,0.03); border-radius: 25px; padding: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .card { background: rgba(255,255,255,0.07); border-radius: 18px; padding: 15px; margin-bottom: 15px; }
+        :root { --primary: #2563eb; --accent: #10b981; --dark: #0f172a; --card: rgba(255,255,255,0.05); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--dark); color: white; padding: 10px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .section { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        
+        /* نظام الدخول */
+        #login-screen { text-align: center; padding: 50px 20px; }
         input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: none; background: #1e293b; color: white; text-align: center; }
         .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
+        .btn-blue { background: var(--primary); color: white; }
+        .btn-green { background: var(--accent); color: white; }
+
+        /* إدارة الفصول */
+        .class-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; margin-top: 10px; border-right: 4px solid var(--primary); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem; }
+        th, td { border: 1px solid rgba(255,255,255,0.1); padding: 8px; text-align: center; }
+        th { background: rgba(59, 130, 246, 0.2); }
         
-        /* هذا المربع سيظهر فيه النص العربي بوضوح قبل تحويله لـ PDF */
-        #pdf-content { 
-            display: none; 
-            background: white; 
-            color: black; 
-            padding: 30px; 
-            width: 800px; /* عرض ثابت لضمان الجودة */
-            position: absolute; 
-            left: -9999px; /* مخفي عن العين لكنه موجود للكود */
-            direction: rtl;
-        }
-        .status { font-size: 0.85rem; color: #fbbf24; text-align: center; margin: 10px 0; display: none; background: rgba(251,191,36,0.1); padding: 8px; border-radius: 8px; }
-        #preview-img { width: 100%; border-radius: 10px; margin-top: 10px; display: none; border: 2px solid var(--primary); }
+        #pdf-export-area { background: white; color: black; padding: 40px; width: 1000px; position: absolute; left: -9999px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div style="text-align: center; margin-bottom: 20px;">
-        <h1 style="font-size: 1.4rem;">مستواي <span style="color:var(--primary)">AI</span></h1>
-        <p style="color: #94a3b8; font-size: 0.75rem;">إدارة وتطوير: أحمد الزوي</p>
+    <div id="login-screen" class="section">
+        <i class="fas fa-user-shield" style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;"></i>
+        <h2>دخول المعلم</h2>
+        <input type="email" id="teacher-email" placeholder="البريد الإلكتروني">
+        <input type="password" id="teacher-pass" placeholder="كلمة المرور">
+        <button class="btn btn-blue" onclick="checkLogin()">دخول للمنظومة</button>
     </div>
 
-    <div class="card">
-        <h2 style="font-size: 1rem; color: #60a5fa; margin-bottom: 10px;"><i class="fas fa-robot"></i> مصحح Gemini الذكي</h2>
-        <input type="file" id="examImg" accept="image/*" onchange="showPreview(event)" style="display:none">
-        <button class="btn" style="background:var(--primary); color:white;" onclick="document.getElementById('examImg').click()">
-            <i class="fas fa-camera"></i> تصوير الورقة
-        </button>
-        <img id="preview-img">
-        <div id="status-msg" class="status"></div>
-        <button id="ai-btn" class="btn" style="background:#10b981; color:white; margin-top:10px; display:none;" onclick="runAI()">
-            <i class="fas fa-magic"></i> استخراج النتيجة (PDF)
-        </button>
-    </div>
+    <div id="main-system" class="hidden">
+        <div class="section">
+            <h2 id="welcome-msg">مرحباً أيها المعلم</h2>
+            <p style="font-size: 0.8rem; color: #94a3b8;">منظومة إدارة الفصول والدرجات - وزارة التربية والتعليم</p>
+            <button class="btn btn-green" style="margin-top:15px;" onclick="showAddClass()">+ إضافة فصل جديد</button>
+        </div>
 
-    <div class="card">
-        <h2 style="font-size: 1rem; color: #60a5fa; margin-bottom: 10px;"><i class="fas fa-calculator"></i> حاسبة المعدل</h2>
-        <select id="sys"><option value="100">نظام 100%</option><option value="4">نظام 4.0</option></select>
-        <div id="inputs"><input type="number" class="grade" placeholder="الدرجة"></div>
-        <button class="btn" style="background:transparent; color:#60a5fa; margin-bottom:8px; border:1px dashed #60a5fa;" onclick="addInput()">+ إضافة مادة</button>
-        <button class="btn" style="background:var(--primary); color:white;" onclick="calculate()">احسب الآن</button>
-        <p id="res-out" style="text-align:center; margin-top:12px; font-weight:bold; color:#10b981;"></p>
+        <div id="add-class-form" class="section hidden">
+            <h3>بيانات الفصل الجديد</h3>
+            <input type="text" id="class-name" placeholder="اسم الفصل (مثال: أولى ثانوي)">
+            <input type="number" id="students-count" placeholder="عدد الطلاب">
+            <button class="btn btn-blue" onclick="saveClass()">حفظ الفصل</button>
+        </div>
+
+        <div id="classes-container"></div>
+
+        <button class="btn btn-blue" style="margin-top:20px; background:#6366f1;" onclick="generateOfficialReport()">
+            <i class="fas fa-print"></i> استخراج الكشوفات النهائية PDF
+        </button>
     </div>
 </div>
 
-<div id="pdf-content">
-    <div style="text-align: center; border-bottom: 3px solid #3b82f6; padding-bottom: 10px;">
-        <h1 style="font-size: 24px;">تقرير تصحيح "مستواي AI"</h1>
-        <p style="font-size: 16px;">موقع المهندس أحمد الزوي الرسمي</p>
+<div id="pdf-export-area">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid black; padding-bottom:10px;">
+        <div style="text-align:right;">دولة ليبيا<br>وزارة التربية والتعليم</div>
+        <div style="text-align:center;"><h2>كشف درجات الطلاب الرسمي</h2></div>
+        <div style="text-align:left;" id="report-teacher-name">اسم المعلم: </div>
     </div>
-    <div style="margin-top: 30px; font-size: 18px;">
-        <p><b>حالة التحليل:</b> تم التصحيح بنجاح</p>
-        <p><b>التاريخ:</b> 10 مارس 2026</p>
-        <p style="margin-top: 20px; line-height: 1.8;"><b>الإجابة النموذجية:</b></p>
-        <div id="ai-response-text" style="background: #f8fafc; padding: 15px; border-right: 5px solid #3b82f6;">
-            جاري معالجة النص العربي لضمان وضوحه في الملف...
-        </div>
-    </div>
-    <div style="margin-top: 50px; text-align: center; color: #64748b; font-size: 12px;">
-        هذا التقرير صدر آلياً عن طريق منصة مستواي - الأبيار، ليبيا.
+    <div id="pdf-content"></div>
+    <div style="margin-top:50px; display:flex; justify-content:space-between;">
+        <div>توقيع المعلم: ....................</div>
+        <div>ختم المدرسة: ....................</div>
     </div>
 </div>
 
 <script>
-    function showPreview(e) {
-        const file = e.target.files[0];
-        if(file) {
-            const r = new FileReader();
-            r.onload = () => {
-                document.getElementById('preview-img').src = r.result;
-                document.getElementById('preview-img').style.display = 'block';
-                document.getElementById('ai-btn').style.display = 'flex';
-            };
-            r.readAsDataURL(file);
+    let classes = JSON.parse(localStorage.getItem('teacher_classes')) || [];
+
+    function checkLogin() {
+        const email = document.getElementById('teacher-email').value;
+        const pass = document.getElementById('teacher-pass').value;
+        if(email && pass === "1234") { // يمكنك تغيير كلمة السر هنا
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-system').classList.remove('hidden');
+            document.getElementById('welcome-msg').innerText = "مرحباً: " + email.split('@')[0];
+            renderClasses();
+        } else { alert("خطأ في بيانات الدخول"); }
+    }
+
+    function showAddClass() { document.getElementById('add-class-form').classList.toggle('hidden'); }
+
+    function saveClass() {
+        const name = document.getElementById('class-name').value;
+        const count = document.getElementById('students-count').value;
+        if(name && count) {
+            const newClass = { id: Date.now(), name: name, students: [] };
+            for(let i=1; i<=count; i++) {
+                newClass.students.push({ id: i, name: `طالب ${i}`, attendance: 0, monthly: 0, final: 0, total: 0 });
+            }
+            classes.push(newClass);
+            localStorage.setItem('teacher_classes', JSON.stringify(classes));
+            renderClasses();
+            showAddClass();
         }
     }
 
-    async function runAI() {
-        const st = document.getElementById('status-msg');
-        st.style.display = 'block';
-        st.innerText = "جاري الاتصال بـ Gemini AI وتنسيق اللغة العربية...";
-        
-        // هنا نضع النص العربي الذي نريده أن يظهر في الـ PDF
-        setTimeout(() => {
-            const resultText = "تم تحليل ورقة الامتحان بنجاح. الإجابات النموذجية هي: 1- الخيار (ب)، 2- الخيار (أ). ملاحظة للمعلم: الطالب أظهر تميزاً في حل المسائل المنطقية.";
-            document.getElementById('ai-response-text').innerText = resultText;
-            st.innerText = "تم التحليل! جاري توليد ملف PDF عالي الجودة...";
-            generateProfessionalPDF();
-        }, 2000);
-    }
-
-    function generateProfessionalPDF() {
-        const element = document.getElementById('pdf-content');
-        element.style.display = 'block'; // إظهاره لحظياً للتصوير
-
-        html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save("تقرير_مستواي_الذكي.pdf");
-            
-            element.style.display = 'none'; // إخفاءه مرة أخرى
-            document.getElementById('status-msg').innerText = "تم تحميل الملف بنجاح ✅";
+    function renderClasses() {
+        const container = document.getElementById('classes-container');
+        container.innerHTML = "";
+        classes.forEach(cls => {
+            let html = `<div class="section class-card">
+                <h3>الفصل: ${cls.name} <button onclick="deleteClass(${cls.id})" style="background:red; color:white; border:none; float:left; border-radius:5px; padding:2px 8px;">حذف</button></h3>
+                <table>
+                    <thead><tr><th>الاسم</th><th>شهري</th><th>نهائي</th><th>مجموع</th></tr></thead>
+                    <tbody>`;
+            cls.students.forEach(st => {
+                html += `<tr>
+                    <td><input type="text" value="${st.name}" onchange="updateData(${cls.id}, ${st.id}, 'name', this.value)" style="margin:0; padding:2px; font-size:0.7rem;"></td>
+                    <td><input type="number" value="${st.monthly}" onchange="updateData(${cls.id}, ${st.id}, 'monthly', this.value)" style="margin:0; padding:2px;"></td>
+                    <td><input type="number" value="${st.final}" onchange="updateData(${cls.id}, ${st.id}, 'final', this.value)" style="margin:0; padding:2px;"></td>
+                    <td>${parseFloat(st.monthly) + parseFloat(st.final)}</td>
+                </tr>`;
+            });
+            html += `</tbody></table></div>`;
+            container.innerHTML += html;
         });
     }
 
-    function addInput() {
-        const i = document.createElement('input');
-        i.type = 'number'; i.className = 'grade'; i.placeholder = 'الدرجة';
-        document.getElementById('inputs').appendChild(i);
+    function updateData(classId, studentId, field, value) {
+        const cls = classes.find(c => c.id === classId);
+        const st = cls.students.find(s => s.id === studentId);
+        st[field] = value;
+        localStorage.setItem('teacher_classes', JSON.stringify(classes));
     }
 
-    function calculate() {
-        const gs = document.querySelectorAll('.grade');
-        let s = 0, c = 0;
-        gs.forEach(i => { if(i.value!==''){ s+=parseFloat(i.value); c++; } });
-        if(c>0) document.getElementById('res-out').innerText = "المعدل النهائي: " + (s/c).toFixed(2);
+    function deleteClass(id) {
+        classes = classes.filter(c => c.id !== id);
+        localStorage.setItem('teacher_classes', JSON.stringify(classes));
+        renderClasses();
+    }
+
+    async function generateOfficialReport() {
+        const pdfContent = document.getElementById('pdf-content');
+        pdfContent.innerHTML = "";
+        classes.forEach(cls => {
+            let tableHtml = `<h3>فصل: ${cls.name}</h3><table><thead><tr><th>الاسم</th><th>أعمال السنة</th><th>النهائي</th><th>المجموع</th></tr></thead><tbody>`;
+            cls.students.forEach(st => {
+                tableHtml += `<tr><td>${st.name}</td><td>${st.monthly}</td><td>${st.final}</td><td>${parseFloat(st.monthly)+parseFloat(st.final)}</td></tr>`;
+            });
+            tableHtml += `</tbody></table><br>`;
+            pdfContent.innerHTML += tableHtml;
+        });
+
+        const element = document.getElementById('pdf-export-area');
+        element.style.display = 'block';
+        html2canvas(element, {scale: 2}).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            pdf.addImage(imgData, 'PNG', 0, 0, 210, (canvas.height*210)/canvas.width);
+            pdf.save("كشوفات_المدرسة_الرسمية.pdf");
+            element.style.display = 'none';
+        });
     }
 </script>
 </body>
