@@ -20,7 +20,6 @@
         input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 1rem; box-sizing: border-box; }
         .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; margin-top: 15px; }
         .btn-blue { background: var(--primary); color: white; }
-        .btn-blue:hover { background: #2563eb; }
         .error-msg { color: #f87171; background: rgba(248, 113, 113, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none; font-size: 0.85rem; text-align: center; }
         .toggle-link { text-align: center; margin-top: 25px; font-size: 0.9rem; color: #94a3b8; }
         .toggle-link a { color: var(--primary); text-decoration: none; font-weight: bold; }
@@ -33,63 +32,48 @@
     <div id="auth-section" class="card">
         <h2>مستواي <span>PRO</span></h2>
         <div class="subtitle" id="auth-subtitle">المنظومة السحابية للمعلمين والطلبة</div>
-        
         <div id="auth-error" class="error-msg"></div>
-
         <input type="email" id="email" placeholder="البريد الإلكتروني">
         <input type="password" id="password" placeholder="كلمة المرور">
-        
         <div id="reg-fields" style="display: none;">
-            <input type="text" id="phone" placeholder="رقم الهاتف (اختياري)">
+            <input type="text" id="phone" placeholder="رقم الهاتف">
             <input type="text" id="school-name" placeholder="اسم المدرسة">
-            <input type="text" id="city-name" placeholder="المدينة (مثال: الأبيار)">
+            <input type="text" id="city-name" placeholder="المدينة (مثلاً: الأبيار)">
         </div>
-
         <button id="auth-btn" class="btn btn-blue" onclick="handleAuth()">دخول المنظومة</button>
-        
         <div class="toggle-link" id="toggle-area">
             ليس لديك حساب؟ <a href="#" onclick="toggleUI(true)">أنشئ حسابك الآن</a>
         </div>
     </div>
 
     <div id="main-app" class="card">
-        <h3 id="welcome-msg" style="margin-bottom: 5px;">أهلاً بك</h3>
+        <h3 id="welcome-msg">أهلاً بك</h3>
         <p id="school-info" style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;"></p>
-        
-        <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+        <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px; border-right: 4px solid var(--primary);">
             <p style="font-size: 0.85rem; margin: 0;">البيانات الآن مزامنة مع السحابة ✅</p>
         </div>
-
         <button class="btn" style="background: #334155; color: white;" onclick="logout()">تسجيل الخروج</button>
     </div>
 </div>
 
 <script>
-// هذا هو كود الربط الصحيح الخاص بك
-  const firebaseConfig = {
-    apiKey: "AIzaSyB0LvixlLqNCwmvcsknedR3Aa8wuPetDlo",
-    authDomain: "mostaway-libya.firebaseapp.com",
-    databaseURL: "https://mostaway-libya-default-rtdb.firebaseio.com",
-    projectId: "mostaway-libya",
-    storageBucket: "mostaway-libya.firebasestorage.app",
-    messagingSenderId: "808814665672",
-    appId: "1:808814665672:web:8fdeae9c1864179dfceafd",
-    measurementId: "G-H43TKWQ09L"
-  };
-
-  // تفعيل الاتصال بالسحابة
-  if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-  }
-  const auth = firebase.auth();
-  const db = firebase.database();    
+    // تم وضع بياناتك الحقيقية هنا يا بشمهندس أحمد
+    const firebaseConfig = {
+        apiKey: "AIzaSyB0LvixlLqNCwmvcsknedR3Aa8wuPetDlo",
+        authDomain: "mostaway-libya.firebaseapp.com",
+        databaseURL: "https://mostaway-libya-default-rtdb.firebaseio.com",
+        projectId: "mostaway-libya",
+        storageBucket: "mostaway-libya.firebasestorage.app",
+        messagingSenderId: "808814665672",
+        appId: "1:808814665672:web:8fdeae9c1864179dfceafd"
+    };
+    
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
 
     let isSignUp = false;
 
-    // تبديل الواجهة
     function toggleUI(signUp) {
         isSignUp = signUp;
         document.getElementById('auth-subtitle').innerText = signUp ? "إنشاء حساب جديد للمعلم" : "المنظومة السحابية للمعلمين والطلبة";
@@ -100,7 +84,6 @@
             'ليس لديك حساب؟ <a href="#" onclick="toggleUI(true)">أنشئ حسابك الآن</a>';
     }
 
-    // الدخول والتسجيل
     function handleAuth() {
         const email = document.getElementById('email').value;
         const pass = document.getElementById('password').value;
@@ -115,7 +98,6 @@
             const phone = document.getElementById('phone').value;
             if(!school || !city) { showError("يرجى إكمال بيانات المدرسة والمدينة"); return; }
 
-            // تعيين حالة الجلسة لتكون طويلة الأمد (تذكرني)
             auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
                 return auth.createUserWithEmailAndPassword(email, pass);
             }).then(res => {
@@ -123,7 +105,6 @@
                     email, school, city, phone, role: 'teacher'
                 });
             }).catch(err => showError("فشل التسجيل: " + err.message));
-
         } else {
             auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
                 return auth.signInWithEmailAndPassword(email, pass);
@@ -131,15 +112,16 @@
         }
     }
 
-    // مراقبة الدخول التلقائي
     auth.onAuthStateChanged(user => {
         if (user) {
             document.getElementById('auth-section').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
             db.ref('users/' + user.uid).once('value').then(snap => {
                 const data = snap.val();
-                document.getElementById('welcome-msg').innerText = "أهلاً بك يا أستاذ";
-                document.getElementById('school-info').innerText = `مدرسة: ${data.school} | ${data.city} | هاتف: ${data.phone || 'غير مسجل'}`;
+                if(data) {
+                    document.getElementById('welcome-msg').innerText = "أهلاً بك يا أستاذ";
+                    document.getElementById('school-info').innerText = `مدرسة: ${data.school} | ${data.city} | هاتف: ${data.phone || 'غير مسجل'}`;
+                }
             });
         }
     });
@@ -154,6 +136,5 @@
         auth.signOut().then(() => location.reload());
     }
 </script>
-
 </body>
 </html>
