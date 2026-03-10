@@ -1,236 +1,139 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة مستواي PRO | الإصدار الشامل</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <style>
-        :root { --primary: #3b82f6; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --danger: #ef4444; --success: #10b981; --warning: #f59e0b; --accent: #8b5cf6; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 10px; line-height: 1.6; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        
-        /* التنسيقات العامة */
-        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; font-size: 1rem; }
-        .btn { padding: 12px 20px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-blue { background: var(--primary); color: white; width: 100%; }
-        .btn-green { background: var(--success); color: white; }
-        .btn-whatsapp { background: #25d366; color: white; font-size: 0.85rem; }
-        
-        /* حالة الطالب */
-        .grade-fail { background: rgba(239, 68, 68, 0.2); color: #f87171 !important; border-radius: 5px; }
-        .grade-pass { background: rgba(16, 185, 129, 0.2); color: #34d399 !important; border-radius: 5px; }
-
-        /* التنقل */
-        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #334155; overflow-x: auto; padding-bottom: 5px; }
-        .tab { padding: 10px 20px; cursor: pointer; color: #94a3b8; white-space: nowrap; border-radius: 10px 10px 0 0; }
-        .tab.active { background: var(--primary); color: white; font-weight: bold; }
-
-        /* البحث والجدول */
-        .search-area { position: relative; margin-bottom: 15px; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th, td { padding: 15px; text-align: center; border-bottom: 1px solid #334155; }
-        th { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
-
-        .coming-soon { background: var(--accent); color: white; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% {opacity: 1} 50% {opacity: 0.5} 100% {opacity: 1} }
-
-        .hidden { display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منظومة مستواي PRO</title>
+<style>
+:root {
+  --primary: #3b82f6;
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #f8fafc;
+  --warning: #f59e0b;
+  --accent: #8b5cf6;
+  --danger: #ef4444;
+  --success: #10b981;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 10px;
+  line-height: 1.6;
+}
+.container { max-width: 1200px; margin: 0 auto; }
+.card {
+  background: var(--card);
+  padding: 20px;
+  border-radius: 15px;
+  border: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+input, select, textarea {
+  width: 100%; padding: 12px; margin: 8px 0;
+  border-radius: 10px; border: 1px solid #334155;
+  background: #0f172a; color: white; font-size: 1rem;
+}
+.btn {
+  padding: 12px 20px; border-radius: 10px; border: none;
+  font-weight: bold; cursor: pointer; transition: 0.3s;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-blue { background: var(--primary); color: white; }
+.btn-green { background: var(--success); color: white; }
+.btn-red { background: var(--danger); color: white; }
+.btn-whatsapp { background: #25d366; color: white; font-size: 0.85rem; }
+.grade-fail { background: rgba(239,68,68,0.2); color: #f87171 !important; border-radius: 5px; }
+.grade-pass { background: rgba(16,185,129,0.2); color: #34d399 !important; border-radius: 5px; }
+.nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #334155; overflow-x: auto; padding-bottom: 5px; }
+.tab { padding: 10px 20px; cursor: pointer; color: #94a3b8; white-space: nowrap; border-radius: 10px 10px 0 0; }
+.tab.active { background: var(--primary); color: white; font-weight: bold; }
+.hidden { display: none; }
+</style>
 </head>
 <body>
-
 <div class="container">
-    <div id="auth-page" class="card" style="max-width: 500px; margin: 50px auto;">
-        <h2 style="text-align: center; margin-bottom: 30px;">مستواي <span style="color: var(--primary);">PRO</span></h2>
-        
-        <div id="login-view">
-            <input type="email" id="login-email" placeholder="البريد الإلكتروني">
-            <input type="password" id="login-pass" placeholder="كلمة المرور">
-            <button class="btn btn-blue" onclick="login()">دخول المنظومة</button>
-            <p style="text-align: center; font-size: 0.9rem;">ليس لديك حساب؟ <a href="#" onclick="toggleAuth(true)" style="color: var(--primary);">سجل الآن</a></p>
-        </div>
+  <div id="auth-page" class="card" style="max-width:500px; margin:50px auto;">
+    <h2 style="text-align:center;">مستواي <span style="color:var(--primary);">PRO</span></h2>
+    <div id="login-view">
+      <input type="email" id="login-email" placeholder="البريد الإلكتروني">
+      <input type="password" id="login-pass" placeholder="كلمة المرور">
+      <button class="btn btn-blue" onclick="login()">دخول المنظومة</button>
+      <p style="text-align:center;">ليس لديك حساب؟ <a href="#" onclick="toggleAuth(true)" style="color:var(--primary);">سجل الآن</a></p>
+    </div>
+    <div id="register-view" class="hidden">
+      <select id="reg-role">
+        <option value="teacher">بصفتي معلم</option>
+        <option value="student">بصفتي طالب</option>
+      </select>
+      <input type="text" id="reg-name" placeholder="الاسم الرباعي">
+      <input type="email" id="reg-email" placeholder="البريد الإلكتروني">
+      <input type="password" id="reg-pass" placeholder="كلمة المرور">
+      <div style="display:flex; gap:10px;">
+        <select id="reg-country" style="flex:1;">
+          <option value="LY" data-pre="+218" data-len="9">ليبيا</option>
+          <option value="EG" data-pre="+20" data-len="10">مصر</option>
+        </select>
+        <input type="number" id="reg-phone" style="flex:2;" placeholder="الهاتف">
+      </div>
+      <button class="btn btn-green" style="width:100%;" onclick="register()">إنشاء الحساب</button>
+      <p style="text-align:center;"><a href="#" onclick="toggleAuth(false)" style="color:var(--primary);">العودة للدخول</a></p>
+    </div>
+  </div>
 
-        <div id="register-view" class="hidden">
-            <select id="reg-role"><option value="teacher">بصفتي معلم</option><option value="student">بصفتي طالب</option></select>
-            <input type="text" id="reg-name" placeholder="الاسم الرباعي">
-            <input type="email" id="reg-email" placeholder="البريد الإلكتروني">
-            <input type="password" id="reg-pass" placeholder="كلمة المرور">
-            <div style="display: flex; gap: 10px;">
-                <select id="reg-country" style="flex: 1;"><option value="LY" data-pre="+218" data-len="9">ليبيا</option><option value="EG" data-pre="+20" data-len="10">مصر</option></select>
-                <input type="number" id="reg-phone" style="flex: 2;" placeholder="رقم الهاتف">
-            </div>
-            <button class="btn btn-green" style="width: 100%; margin-top: 10px;" onclick="register()">إنشاء الحساب</button>
-            <p style="text-align: center;"><a href="#" onclick="toggleAuth(false)" style="color: var(--primary);">العودة للدخول</a></p>
-        </div>
+  <div id="dashboard" class="hidden">
+    <div class="nav-tabs">
+      <div class="tab active" id="tab-main-btn" onclick="showTab('main')">سجل الدرجات</div>
+      <div class="tab" id="tab-analysis-btn" onclick="showTab('analysis')">ذكاء المنظومة</div>
+      <div class="tab" id="tab-settings-btn" onclick="showTab('settings')">الإعدادات والأمان</div>
     </div>
 
-    <div id="dashboard" class="hidden">
-        <div class="nav-tabs">
-            <div class="tab active" id="tab-main-btn" onclick="showTab('main')">📁 سجل الدرجات</div>
-            <div class="tab" id="tab-analysis-btn" onclick="showTab('analysis')">🧠 ذكاء المنظومة</div>
-            <div class="tab" id="tab-settings-btn" onclick="showTab('settings')">⚙️ الإعدادات والأمان</div>
+    <div id="view-main">
+      <div class="card">
+        <h3>توليد كشف درجات</h3>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; align-items:end;">
+          <div><label>المادة</label><input type="text" id="subject-name" placeholder="مثلاً: لغة عربية"></div>
+          <div><label>نظام التقييم</label><select id="grade-system"><option value="100">(%100) مئوي</option><option value="4">(4.0 GPA)</option></select></div>
+          <div><label>عدد الطلاب</label><input type="number" id="std-count" value="1"></div>
+          <button class="btn btn-blue" onclick="createTable()">تحديث الجدول</button>
         </div>
-
-        <div id="view-main">
-            <div class="card">
-                <h3>توليد كشف درجات</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
-                    <div><label>المادة</label><input type="text" id="subject-name" placeholder="مثلاً: لغة عربية"></div>
-                    <div><label>نظام التقييم</label><select id="grade-system"><option value="100">مئوي (100%)</option><option value="4">معدل (4.0 GPA)</option></select></div>
-                    <div><label>عدد الطلاب</label><input type="number" id="std-count" value="1"></div>
-                    <button class="btn btn-blue" onclick="createTable()">تحديث الجدول</button>
-                </div>
-            </div>
-
-            <div id="table-area" class="card hidden">
-                <div class="search-area">
-                    <input type="text" id="search-input" placeholder="🔍 ابحث عن اسم طالب في الكشف..." onkeyup="searchTable()">
-                </div>
-                <div style="overflow-x: auto;">
-                    <table id="grade-table">
-                        <thead><tr><th>الاسم</th><th>مشاركة</th><th>اختبار 1</th><th>اختبار 2</th><th>نهائي</th><th>المجموع</th></tr></thead>
-                        <tbody id="table-body"></tbody>
-                    </table>
-                </div>
-            </div>
+      </div>
+      <div id="table-area" class="card hidden">
+        <div class="search-area"><input type="text" id="search-input" placeholder="ابحث عن اسم طالب" onkeyup="searchTable()"></div>
+        <div style="overflow-x:auto;">
+          <table id="grade-table">
+            <thead><tr><th>اسم الطالب</th><th>اختبار 1</th><th>مشاركة</th><th>اختبار 2</th><th>نهائي</th><th>المجموع</th></tr></thead>
+            <tbody id="table-body"></tbody>
+          </table>
         </div>
-
-        <div id="view-analysis" class="hidden">
-            <div class="card">
-                <h3>الحالة العامة للفصل <span class="coming-soon">AI Analysis</span></h3>
-                <div id="analysis-content">
-                    <p>أدخل الدرجات في السجل ليتم تحليلها هنا.</p>
-                </div>
-            </div>
-
-            <div id="focus-area" class="card hidden">
-                <h4 style="color: var(--danger);">🛑 طلاب يحتاجون تدخل فوري (رسوب/تعثر):</h4>
-                <div id="fail-list"></div>
-            </div>
-
-            <div class="card" style="border-right: 5px solid var(--accent);">
-                <h4>💬 استشارة جيمناي السريعة</h4>
-                <div id="chat-box" style="height: 120px; background: #0f172a; padding: 10px; border-radius: 10px; overflow-y: auto; margin-bottom: 10px; font-size: 0.9rem;">
-                    مرحباً بك يا بشمهندس! أنا مساعدك الذكي، اسألني عن أي طريقة لتحسين مستوى طلابك.
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="chat-input" placeholder="مثلاً: كيف أحفز الطالب الضعيف؟">
-                    <button class="btn btn-green" onclick="askGemini()">اسأل</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="view-settings" class="hidden">
-            <div class="card">
-                <h3>إعدادات الملف الشخصي</h3>
-                <label>الاسم الكامل</label><input type="text" id="set-name">
-                <label>رقم الهاتف</label><input type="text" id="set-phone">
-                <button class="btn btn-blue" onclick="updateProfile()">تحديث البيانات</button>
-                <hr style="margin: 20px 0; border-top: 1px solid #334155;">
-                <label>تغيير كلمة السر</label><input type="password" id="set-pass" placeholder="كلمة سر جديدة">
-                <button class="btn btn-red" onclick="updatePass()">تغيير السر</button>
-            </div>
-
-            <div class="card">
-                <h3>هدف المنظومة</h3>
-                <p style="font-size: 0.9rem; color: #94a3b8;">
-                    نسعى لتمكين المعلم الليبي والعربي بأدوات تكنولوجية ذكية تختصر الوقت وتجعل التواصل مع ولي الأمر أسهل وأسرع.
-                </p>
-                <button class="btn btn-red" style="width: 100%;" onclick="logout()">تسجيل خروج آمن</button>
-            </div>
-        </div>
+      </div>
     </div>
-</div>
 
-<script>
-    // إعدادات Firebase (مفاتيحك الأصلية محفظة بدقة)
-    const firebaseConfig = {
-        apiKey: "AIzaSyB0LvixlLqNCwmvcsknedR3Aa8wuPetDlo",
-        authDomain: "mostaway-libya.firebaseapp.com",
-        databaseURL: "https://mostaway-libya-default-rtdb.firebaseio.com",
-        projectId: "mostaway-libya",
-        storageBucket: "mostaway-libya.firebasestorage.app",
-        messagingSenderId: "808814665672",
-        appId: "1:808814665672:web:8fdeae9c1864179dfceafd"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
+    <div id="view-analysis" class="hidden">
+      <div class="card">
+        <h3>الحالة العامة للفصل</h3>
+        <div id="analysis-content">أدخل الدرجات في السجل ليتم تحليلها هنا</div>
+      </div>
+      <div id="focus-area" class="card hidden">
+        <h4 style="color:var(--danger);">طلاب يحتاجون تدخل فوري</h4>
+        <div id="fail-list"></div>
+      </div>
+      <div class="card" style="border-right:5px solid var(--accent);">
+        <h4>استشارة جيمناي السريعة</h4>
+        <div id="chat-box" style="height:120px; background:#0f172a; padding:10px; border-radius:10px; overflow-y:auto; margin-bottom:10px; font-size:0.9rem;">مرحباً بك يا بشمهندس! أنا مساعدك الذكي.</div>
+        <div style="display:flex; gap:10px;">
+          <input type="text" id="chat-input" placeholder="مثلاً: كيف أحفز الطالب الضعيف؟">
+          <button class="btn btn-green" onclick="askGemini()">اسأل</button>
+        </div>
+      </div>
+    </div>
 
-    // 1. توليد الجدول والذكاء التلقائي
-    function createTable() {
-        const count = document.getElementById('std-count').value;
-        const tbody = document.getElementById('table-body');
-        tbody.innerHTML = '';
-        for(let i=0; i<count; i++){
-            tbody.innerHTML += `
-                <tr>
-                    <td><input type="text" class="row-name" placeholder="اسم الطالب"></td>
-                    <td><input type="number" class="row-p" value="0" oninput="calculate(this)"></td>
-                    <td><input type="number" class="row-e1" value="0" oninput="calculate(this)"></td>
-                    <td><input type="number" class="row-e2" value="0" oninput="calculate(this)"></td>
-                    <td><input type="number" class="row-f" value="0" oninput="calculate(this)"></td>
-                    <td class="row-total" style="font-weight:bold">0</td>
-                </tr>`;
-        }
-        document.getElementById('table-area').classList.remove('hidden');
-    }
-
-    function calculate(el) {
-        const tr = el.closest('tr');
-        const sys = document.getElementById('grade-system').value;
-        const sum = (parseFloat(tr.querySelector('.row-p').value)||0) + 
-                    (parseFloat(tr.querySelector('.row-e1').value)||0) + 
-                    (parseFloat(tr.querySelector('.row-e2').value)||0) + 
-                    (parseFloat(tr.querySelector('.row-f').value)||0);
-        
-        let final = sys === "4" ? ((sum/100)*4).toFixed(2) : sum;
-        const target = tr.querySelector('.row-total');
-        target.innerText = final;
-
-        // التلوين الذكي
-        target.className = 'row-total ' + (final < (sys === "4" ? 2 : 50) ? 'grade-fail' : 'grade-pass');
-        
-        analyzeData(); // تحديث فوري للتحليل
-    }
-
-    // 2. تحليل البيانات وميزة واتساب
-    function analyzeData() {
-        const rows = document.querySelectorAll('#table-body tr');
-        const sys = document.getElementById('grade-system').value;
-        const subject = document.getElementById('subject-name').value || "المادة";
-        let fails = [];
-
-        rows.forEach(r => {
-            const name = r.querySelector('.row-name').value;
-            const score = parseFloat(r.querySelector('.row-total').innerText);
-            if(name && score < (sys === "4" ? 2 : 50)) fails.push({name, score});
-        });
-
-        const focusArea = document.getElementById('focus-area');
-        const failList = document.getElementById('fail-list');
-
-        if(fails.length > 0) {
-            focusArea.classList.remove('hidden');
-            failList.innerHTML = fails.map(s => `
-                <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin:5px 0;">
-                    <span> الطالب: ${s.name} (درجة: ${s.score})</span>
-                    <button class="btn btn-whatsapp" onclick="sendWA('${s.name}', '${s.score}', '${subject}')">إرسال تقرير لولي الأمر 📱</button>
-                </div>
-            `).join('');
-        }
-    }
-
-    function sendWA(name, score, sub) {
-        const msg = `السلام عليكم ولي أمر الطالب: ${name}. نود إفادتكم بأن نتيجة ابنكم في مادة ${sub} هي (${score})، وهو يحتاج لمزيد من الاهتمام المركز لتحسين مستواه. منظومة مستواي PRO.`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-    }
-
-    // 3. شات جيمناي المحاكي
-    function askGem
+    <div id="view-settings" class="hidden">
+      <div class="card">
+        <h3>إعدادات الملف الشخصي</h3>
+        <label>الاسم الكامل</label><input type="text" id="set-name">
+        <label>رقم الهاتف</label><input type="text" id="set-phone">
+        <button class="btn btn-blue" onclick="updateProfile()">تحديث البيانات
