@@ -65,17 +65,24 @@
 </div>
 
 <script>
-    // 1. استبدل هذه النجوم بالقيم التي حصلت عليها من Firebase Console
-    const firebaseConfig = {
-        apiKey: "AIzaSyB0LvixlLqNCwmvcsknedR3Aa8wuPetDlo", 
-        authDomain: "mostaway-libya.firebaseapp.com",
-        databaseURL: "https://mostaway-libya-default-rtdb.firebaseio.com",
-        projectId: "mostaway-libya",
-        storageBucket: "mostaway-libya.appspot.com",
-        messagingSenderId: "808814665672",
-        appId: "1:808814665672:web:8fdeae9c1864179dfceafd"
-    };
-    
+// هذا هو كود الربط الصحيح الخاص بك
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0LvixlLqNCwmvcsknedR3Aa8wuPetDlo",
+    authDomain: "mostaway-libya.firebaseapp.com",
+    databaseURL: "https://mostaway-libya-default-rtdb.firebaseio.com",
+    projectId: "mostaway-libya",
+    storageBucket: "mostaway-libya.firebasestorage.app",
+    messagingSenderId: "808814665672",
+    appId: "1:808814665672:web:8fdeae9c1864179dfceafd",
+    measurementId: "G-H43TKWQ09L"
+  };
+
+  // تفعيل الاتصال بالسحابة
+  if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+  }
+  const auth = firebase.auth();
+  const db = firebase.database();    
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
