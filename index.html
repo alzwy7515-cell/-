@@ -33,14 +33,18 @@
         <h2>مستواي <span>PRO</span></h2>
         <div class="subtitle" id="auth-subtitle">المنظومة السحابية للمعلمين والطلبة</div>
         <div id="auth-error" class="error-msg"></div>
+
         <input type="email" id="email" placeholder="البريد الإلكتروني">
         <input type="password" id="password" placeholder="كلمة المرور">
+        
         <div id="reg-fields" style="display: none;">
             <input type="text" id="phone" placeholder="رقم الهاتف">
             <input type="text" id="school-name" placeholder="اسم المدرسة">
-            <input type="text" id="city-name" placeholder="المدينة (مثلاً: الأبيار)">
+            <input type="text" id="city-name" placeholder="المدينة">
         </div>
+
         <button id="auth-btn" class="btn btn-blue" onclick="handleAuth()">دخول المنظومة</button>
+        
         <div class="toggle-link" id="toggle-area">
             ليس لديك حساب؟ <a href="#" onclick="toggleUI(true)">أنشئ حسابك الآن</a>
         </div>
@@ -49,15 +53,15 @@
     <div id="main-app" class="card">
         <h3 id="welcome-msg">أهلاً بك</h3>
         <p id="school-info" style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;"></p>
-        <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px; border-right: 4px solid var(--primary);">
-            <p style="font-size: 0.85rem; margin: 0;">البيانات الآن مزامنة مع السحابة ✅</p>
+        <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <p style="font-size: 0.85rem; margin: 0; color:#3b82f6;">تم الاتصال بالسحابة بنجاح ✅</p>
         </div>
         <button class="btn" style="background: #334155; color: white;" onclick="logout()">تسجيل الخروج</button>
     </div>
 </div>
 
 <script>
-    // تم وضع بياناتك الحقيقية هنا يا بشمهندس أحمد
+    // بياناتك الحقيقية التي أرسلتها الآن
     const firebaseConfig = {
         apiKey: "AIzaSyB0LvixlLqNCwmvcsknedR3Aa8wuPetDlo",
         authDomain: "mostaway-libya.firebaseapp.com",
@@ -90,51 +94,21 @@
         const errorBox = document.getElementById('auth-error');
         errorBox.style.display = 'none';
 
-        if(!email || !pass) { showError("البريد وكلمة السر مطلوبان"); return; }
-
         if(isSignUp) {
             const school = document.getElementById('school-name').value;
             const city = document.getElementById('city-name').value;
             const phone = document.getElementById('phone').value;
-            if(!school || !city) { showError("يرجى إكمال بيانات المدرسة والمدينة"); return; }
-
-            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-                return auth.createUserWithEmailAndPassword(email, pass);
-            }).then(res => {
+            
+            auth.createUserWithEmailAndPassword(email, pass).then(res => {
                 db.ref('users/' + res.user.uid).set({
                     email, school, city, phone, role: 'teacher'
                 });
-            }).catch(err => showError("فشل التسجيل: " + err.message));
+            }).catch(err => showError("فشل التسجيل: تأكد من تفعيل Email/Password في Firebase"));
         } else {
-            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-                return auth.signInWithEmailAndPassword(email, pass);
-            }).catch(err => showError("البريد أو كلمة السر غير صحيحة"));
+            auth.signInWithEmailAndPassword(email, pass).catch(err => showError("البريد أو كلمة السر خطأ"));
         }
     }
 
     auth.onAuthStateChanged(user => {
         if (user) {
-            document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('main-app').style.display = 'block';
-            db.ref('users/' + user.uid).once('value').then(snap => {
-                const data = snap.val();
-                if(data) {
-                    document.getElementById('welcome-msg').innerText = "أهلاً بك يا أستاذ";
-                    document.getElementById('school-info').innerText = `مدرسة: ${data.school} | ${data.city} | هاتف: ${data.phone || 'غير مسجل'}`;
-                }
-            });
-        }
-    });
-
-    function showError(msg) {
-        const box = document.getElementById('auth-error');
-        box.innerText = msg;
-        box.style.display = 'block';
-    }
-
-    function logout() {
-        auth.signOut().then(() => location.reload());
-    }
-</script>
-</body>
-</html>
+            document.getElementById('auth-section').style.display =
