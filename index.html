@@ -2,294 +2,195 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مستواي PRO | م. أحمد الزوي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظومة مستواي - نسخة التصدير الرسمي</title>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
     <style>
-        :root { --primary: #2563eb; --dark: #0f172a; --card: #1e293b; --danger: #ef4444; --warning: #eab308; --success: #10b981; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--dark); color: white; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
-
-        /* الشريط العلوي */
-        .top-bar { position: fixed; top: 0; right: 0; width: 100%; background: var(--card); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 999; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .menu-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
-
-        /* القائمة الجانبية الموحدة */
-        .sidebar { position: fixed; right: -280px; top: 0; width: 280px; height: 100vh; background: var(--card); z-index: 1000; transition: right 0.3s ease; border-left: 1px solid rgba(255,255,255,0.1); padding-top: 70px; }
-        .sidebar.open { right: 0; }
-        .nav-link { padding: 15px 20px; display: block; color: #cbd5e1; text-decoration: none; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .nav-link:hover, .nav-link.active { background: rgba(37, 99, 235, 0.1); color: var(--primary); border-right: 4px solid var(--primary); }
-
-        /* طبقة التعتيم للهواتف */
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 998; display: none; }
-        .overlay.active { display: block; }
-
-        /* المحتوى الرئيسي */
-        .main-content { padding: 20px; padding-top: 80px; width: 100%; max-width: 800px; margin: 0 auto; }
-        
-        /* البطاقات والمدخلات */
-        .card { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 1rem; }
-        .btn { width: 100%; padding: 14px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; margin-bottom: 10px; font-size: 1rem; transition: 0.2s; }
-        .btn-blue { background: var(--primary); }
-        .btn-green { background: var(--success); }
-        
-        /* الجداول الانسيابية */
-        .table-container { overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 5px; }
-        table { width: 100%; border-collapse: collapse; min-width: 450px; }
-        th, td { padding: 12px 10px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        th { background: rgba(37, 99, 235, 0.1); color: var(--primary); font-size: 0.9rem; }
-        td input { margin: 0; padding: 8px; width: 100%; text-align: center; border: none; background: rgba(255,255,255,0.05); }
-
-        /* الألوان التقييمية */
-        .status-fail { color: var(--danger); font-weight: bold; }
-        .status-warn { color: var(--warning); font-weight: bold; }
-        .status-pass { color: var(--success); font-weight: bold; }
-
-        .page-section { display: none; animation: fadeIn 0.3s; }
-        .page-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        #pdf-render-area { background: white; color: black; padding: 40px; width: 800px; position: absolute; left: -9999px; }
+        :root { --primary: #3b82f6; --dark: #0f172a; --card: #1e293b; --excel: #107c10; --pdf: #e11d48; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: var(--dark); color: white; padding-bottom: 50px; }
+        .container { padding: 15px; max-width: 700px; margin: 0 auto; }
+        .card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; }
+        .btn { padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; }
+        .export-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .btn-excel { background: var(--excel); color: white; }
+        .btn-pdf { background: var(--pdf); color: white; }
+        .student-item { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; margin-bottom: 8px; border-right: 4px solid var(--primary); }
     </style>
 </head>
 <body>
 
-    <div class="top-bar">
-        <h2 style="font-size: 1.2rem; margin:0;">مستواي <span style="color: var(--primary)">PRO</span></h2>
-        <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+<div class="container">
+    <h2 style="text-align: center; margin: 25px 0;">مستواي <span style="color:var(--primary)">Export</span></h2>
+
+    <div id="auth-box" class="card">
+        <h3>تسجيل الدخول / اشتراك</h3>
+        <input type="email" id="email" placeholder="البريد الإلكتروني">
+        <input type="password" id="password" placeholder="كلمة المرور">
+        <button class="btn btn-primary" onclick="processAuth()">دخول السحابة</button>
+        <p style="text-align: center; font-size: 0.8rem; margin-top: 10px;">سيطلب منك رقم الهاتف والمدرسة عند أول تسجيل</p>
     </div>
 
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-
-    <div class="sidebar" id="sidebar">
-        <a class="nav-link active" onclick="switchPage('auth-page')"><i class="fas fa-user-lock"></i> الحساب والأمان</a>
-        <a class="nav-link" onclick="switchPage('teacher-page')"><i class="fas fa-chalkboard-teacher"></i> منظومة الفصول</a>
-        <a class="nav-link" onclick="switchPage('ai-page')"><i class="fas fa-robot"></i> مصحح الأوراق (AI)</a>
-        <a class="nav-link" onclick="switchPage('calc-page')"><i class="fas fa-calculator"></i> حاسبة المعدل</a>
-    </div>
-
-    <div class="main-content">
-        <div id="auth-page" class="page-section active">
-            <div class="card">
-                <h3 style="margin-bottom: 20px; text-align:center;">دخول المنظومة</h3>
-                <input type="email" id="log-email" placeholder="البريد الإلكتروني">
-                <input type="password" id="log-pass" placeholder="كلمة المرور">
-                <button class="btn btn-blue" onclick="login()">تسجيل الدخول</button>
-                <p style="text-align:center; font-size:0.8rem; margin-top:10px; color:#cbd5e1;">البيانات تُحفظ مشفرة في هاتفك الشخصي.</p>
+    <div id="teacher-view" style="display:none;">
+        <div class="card">
+            <h4 id="school-info">المدرسة: جاري التحميل...</h4>
+            <div class="export-group">
+                <button class="btn btn-excel" onclick="exportToExcel()">
+                    💾 تصدير Excel
+                </button>
+                <button class="btn btn-pdf" onclick="exportToPDF()">
+                    📄 تصدير PDF
+                </button>
             </div>
         </div>
 
-        <div id="teacher-page" class="page-section">
-            <div class="card">
-                <h3 style="margin-bottom: 15px; color:var(--primary);">إضافة فصل جديد</h3>
-                <input type="text" id="cls-name" placeholder="اسم الفصل (مثال: أولى ثانوي)">
-                <select id="grade-type">
-                    <option value="" disabled selected>-- اختر نوع الدرجة --</option>
-                    <option value="مشاركة يومية">مشاركة يومية</option>
-                    <option value="أعمال سنة">أعمال سنة</option>
-                    <option value="امتحان نصفي">امتحان نصفي</option>
-                    <option value="امتحان نهائي">امتحان نهائي</option>
-                </select>
-                <input type="number" id="max-grade" placeholder="الدرجة العظمى المحددة من الوزارة">
-                <input type="number" id="std-count" placeholder="عدد الطلاب">
-                <button class="btn btn-blue" onclick="generateClass()">إنشاء الفصل</button>
-            </div>
-            
-            <div id="classes-container"></div>
-            <button class="btn btn-green" style="margin-top:20px; display:none;" id="print-btn" onclick="exportToPDF()"><i class="fas fa-print"></i> استخراج الكشوفات PDF</button>
+        <div class="card">
+            <h4>إضافة طالب</h4>
+            <input type="text" id="std-name" placeholder="اسم الطالب الرباعي">
+            <button class="btn btn-primary" onclick="addNewStudent()">+ إضافة للطيف التعليمي</button>
         </div>
 
-        <div id="ai-page" class="page-section">
-            <div class="card">
-                <h3 style="margin-bottom: 15px;">المصحح الآلي (Gemini)</h3>
-                <input type="file" accept="image/*">
-                <button class="btn btn-blue" onclick="alert('جاري معالجة الصورة...')">استخراج النتيجة</button>
-            </div>
-        </div>
-
-        <div id="calc-page" class="page-section">
-            <div class="card">
-                <h3 style="margin-bottom: 15px;">حاسبة المعدل</h3>
-                <div id="calc-inputs"><input type="number" class="calc-val" placeholder="أدخل الدرجة"></div>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn" style="background:#334155; width:50%;" onclick="addCalcInput()">+ إضافة</button>
-                    <button class="btn btn-green" style="width:50%;" onclick="calculateGPA()">احسب</button>
-                </div>
-                <h3 id="calc-result" style="text-align:center; margin-top:15px; color:var(--success);"></h3>
-            </div>
-        </div>
+        <div id="students-list"></div>
     </div>
+</div>
 
-    <div id="pdf-render-area">
-        <div style="text-align: center; border-bottom: 2px solid black; padding-bottom: 15px;">
-            <h2>دولة ليبيا - وزارة التربية والتعليم</h2>
-            <h3>كشف الدرجات الرسمي والتفصيلي</h3>
-        </div>
-        <div id="pdf-body" style="margin-top: 30px;"></div>
-        <div style="margin-top: 60px; display: flex; justify-content: space-between; font-weight: bold;">
-            <p>اسم المعلم: ..........................</p>
-            <p>ختم المدرسة: ..........................</p>
-        </div>
-    </div>
+<script>
+    // --- إعدادات Firebase الخاصة بك يا بشمهندس أحمد ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyB0LvixlLqNCwmvcsknedR3Aa8wuPetDlo",
+        authDomain: "mostaway-libya.firebaseapp.com",
+        databaseURL: "https://mostaway-libya-default-rtdb.firebaseio.com",
+        projectId: "mostaway-libya",
+        storageBucket: "mostaway-libya.firebasestorage.app",
+        messagingSenderId: "808814665672",
+        appId: "1:808814665672:web:8fdeae9c1864179dfceafd"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-    <script>
-        // تفعيل قاعدة البيانات المحلية (Local Storage)
-        let db = JSON.parse(localStorage.getItem('mustaway_database')) || [];
+    let allStudentsData = []; // لتخزين البيانات محلياً قبل التصدير
+    let currentSchool = "";
 
-        function saveDB() {
-            localStorage.setItem('mustaway_database', JSON.stringify(db));
-        }
-
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-
-        function switchPage(pageId) {
-            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            if(window.innerWidth <= 768) toggleMenu();
-            
-            if(pageId === 'teacher-page') renderClasses();
-        }
-
-        function login() {
-            const email = document.getElementById('log-email').value;
-            const pass = document.getElementById('log-pass').value;
-            if(!email || !pass) return alert('الرجاء تعبئة البيانات');
-            if(!/[a-zA-Z]/.test(pass)) return alert('كلمة السر يجب أن تحتوي على أحرف إنجليزية');
-            switchPage('teacher-page');
-        }
-
-        function generateClass() {
-            const name = document.getElementById('cls-name').value;
-            const type = document.getElementById('grade-type').value;
-            const max = parseFloat(document.getElementById('max-grade').value);
-            const count = parseInt(document.getElementById('std-count').value);
-
-            if(!name || !type || isNaN(max) || isNaN(count)) return alert('الرجاء إكمال كافة الإعدادات!');
-
-            const newClass = { id: Date.now(), name, type, max, students: [] };
-            for(let i=1; i<=count; i++) newClass.students.push({ id: i, name: `طالب ${i}`, mark: 0 });
-            
-            db.push(newClass);
-            saveDB(); // حفظ التغييرات فوراً
-            renderClasses();
-        }
-
-        function renderClasses() {
-            const container = document.getElementById('classes-container');
-            container.innerHTML = '';
-            
-            if(db.length > 0) document.getElementById('print-btn').style.display = 'block';
-
-            db.forEach(cls => {
-                let html = `
-                <div class="card">
-                    <h3 style="color:var(--primary); display:flex; justify-content:space-between;">
-                        ${cls.name} <button onclick="deleteClass(${cls.id})" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:0.8rem;">حذف الفصل</button>
-                    </h3>
-                    <p style="font-size:0.85rem; color:#cbd5e1; margin-bottom:10px;">التقييم: <b>${cls.type}</b> | الدرجة العظمى: <b>${cls.max}</b></p>
-                    <div class="table-container">
-                        <table>
-                            <tr><th style="width:40%">الاسم</th><th style="width:30%">الدرجة</th><th style="width:30%">الحالة</th></tr>`;
-                
-                cls.students.forEach(st => {
-                    let status = "لم يُقيم"; let statusClass = "";
-                    if(st.mark !== "") {
-                        const percent = (st.mark / cls.max) * 100;
-                        if(percent < 50) { status = "راسب"; statusClass = "status-fail"; }
-                        else if(percent <= 65) { status = "ضعيف"; statusClass = "status-warn"; }
-                        else { status = "ناجح"; statusClass = "status-pass"; }
-                    }
-
-                    html += `
-                            <tr>
-                                <td><input type="text" value="${st.name}" onchange="updateStd(${cls.id}, ${st.id}, 'name', this.value)"></td>
-                                <td><input type="number" value="${st.mark}" onchange="updateStd(${cls.id}, ${st.id}, 'mark', this.value, ${cls.max})"></td>
-                                <td class="${statusClass}">${status}</td>
-                            </tr>`;
+    function processAuth() {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        auth.signInWithEmailAndPassword(email, pass).catch(err => {
+            if(err.code === 'auth/user-not-found') {
+                const school = prompt("اسم المدرسة:");
+                const phone = prompt("رقم الهاتف:");
+                auth.createUserWithEmailAndPassword(email, pass).then(res => {
+                    db.ref('users/' + res.user.uid).set({ email, school, phone, role: 'teacher' });
                 });
-                html += `</table></div></div>`;
-                container.innerHTML += html;
-            });
-        }
-
-        function updateStd(cId, sId, field, val, maxMark) {
-            const cls = db.find(c => c.id === cId);
-            const st = cls.students.find(s => s.id === sId);
-            
-            if(field === 'mark') {
-                let mark = parseFloat(val);
-                if(mark > maxMark) {
-                    alert(`تجاوزت الحد! الدرجة العظمى هي ${maxMark}`);
-                    mark = maxMark;
-                }
-                st.mark = isNaN(mark) ? 0 : mark;
-            } else {
-                st.name = val;
             }
-            saveDB();
-            renderClasses();
-        }
+        });
+    }
 
-        function deleteClass(id) {
-            if(confirm('هل أنت متأكد من حذف هذا الفصل بالكامل؟')) {
-                db = db.filter(c => c.id !== id);
-                saveDB();
-                renderClasses();
-            }
-        }
-
-        function exportToPDF() {
-            const body = document.getElementById('pdf-body');
-            body.innerHTML = '';
-            db.forEach(cls => {
-                let h = `<div style="margin-bottom:30px;"><h3 style="background:#f1f5f9; padding:10px; border:1px solid #ccc;">الفصل: ${cls.name} | التقييم: ${cls.type} | الدرجة العظمى: ${cls.max}</h3>
-                <table style="width:100%; border-collapse:collapse; text-align:center;" border="1">
-                    <tr style="background:#e2e8f0;"><th>اسم الطالب</th><th>الدرجة الممنوحة</th><th>حالة الطالب</th></tr>`;
-                cls.students.forEach(st => {
-                    const percent = (st.mark / cls.max) * 100;
-                    let note = percent < 50 ? "راسب" : (percent <= 65 ? "يحتاج متابعة" : "مجتاز");
-                    h += `<tr><td style="padding:8px;">${st.name}</td><td>${st.mark}</td><td>${note}</td></tr>`;
-                });
-                body.innerHTML += h + `</table></div>`;
-            });
-
-            const area = document.getElementById('pdf-render-area');
-            area.style.left = '0';
-            html2canvas(area, {scale: 2}).then(canvas => {
-                const img = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                pdf.addImage(img, 'PNG', 0, 0, 210, (canvas.height*210)/canvas.width);
-                pdf.save("كشوفات_درجات_الطلاب.pdf");
-                area.style.left = '-9999px';
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            document.getElementById('auth-box').style.display = 'none';
+            document.getElementById('teacher-view').style.display = 'block';
+            db.ref('users/' + user.uid).once('value', snap => {
+                currentSchool = snap.val().school;
+                document.getElementById('school-info').innerText = "مدرسة: " + currentSchool;
+                loadStudents(currentSchool);
             });
         }
+    });
 
-        function addCalcInput() {
-            const i = document.createElement('input');
-            i.type = 'number'; i.className = 'calc-val'; i.placeholder = 'أدخل الدرجة';
-            document.getElementById('calc-inputs').appendChild(i);
+    function loadStudents(school) {
+        db.ref('schools/' + school + '/students').on('value', snap => {
+            const list = document.getElementById('students-list');
+            list.innerHTML = "";
+            allStudentsData = [];
+            snap.forEach(child => {
+                const s = child.val();
+                allStudentsData.push({ ...s, id: child.key });
+                list.innerHTML += `
+                    <div class="student-item">
+                        <p><b>${s.name}</b></p>
+                        <div style="display:flex; gap:10px; margin-top:5px;">
+                            <input type="number" value="${s.grades.p}" onchange="updateMark('${school}','${child.key}','p',this.value)" placeholder="P">
+                            <input type="number" value="${s.grades.m}" onchange="updateMark('${school}','${child.key}','m',this.value)" placeholder="M">
+                            <input type="number" value="${s.grades.f}" onchange="updateMark('${school}','${child.key}','f',this.value)" placeholder="F">
+                        </div>
+                    </div>`;
+            });
+        });
+    }
+
+    function updateMark(school, id, type, val) {
+        db.ref(`schools/${school}/students/${id}/grades/${type}`).set(parseFloat(val) || 0);
+    }
+
+    function addNewStudent() {
+        const name = document.getElementById('std-name').value;
+        if(name) {
+            db.ref('schools/' + currentSchool + '/students').push({
+                name: name,
+                grades: { p:0, m:0, f:0 },
+                status: 'locked'
+            });
+            document.getElementById('std-name').value = "";
         }
+    }
 
-        function calculateGPA() {
-            const inputs = document.querySelectorAll('.calc-val');
-            let sum = 0, count = 0;
-            inputs.forEach(i => { if(i.value !== '') { sum += parseFloat(i.value); count++; } });
-            document.getElementById('calc-result').innerText = count > 0 ? "المعدل: " + (sum/count).toFixed(2) + "%" : "";
-        }
+    // --- وظائف التصدير (المميزات الجديدة) ---
 
-        // تحميل البيانات عند فتح الموقع
-        window.onload = () => { if(db.length > 0) renderClasses(); }
-    </script>
+    function exportToExcel() {
+        if(allStudentsData.length === 0) return alert("لا توجد بيانات لتصديرها");
+        
+        const data = allStudentsData.map(s => ({
+            "اسم الطالب": s.name,
+            "المشاركة": s.grades.p,
+            "نصفي": s.grades.m,
+            "نهائي": s.grades.f,
+            "المجموع": (s.grades.p + s.grades.m + s.grades.f)
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "كشف الدرجات");
+        XLSX.writeFile(wb, `كشف_درجات_${currentSchool}.xlsx`);
+    }
+
+    function exportToPDF() {
+        if(allStudentsData.length === 0) return alert("لا توجد بيانات لتصديرها");
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'p', format: 'a4' });
+        
+        // دعم اللغة العربية (تحتاج ملف خط، هنا سنستخدم الخط الافتراضي مع ترتيب النص)
+        doc.text(`كشف درجات مدرسة: ${currentSchool}`, 105, 15, { align: 'center' });
+
+        const rows = allStudentsData.map(s => [
+            (s.grades.p + s.grades.m + s.grades.f),
+            s.grades.f,
+            s.grades.m,
+            s.grades.p,
+            s.name
+        ]);
+
+        doc.autoTable({
+            head: [['المجموع', 'النهائي', 'النصفي', 'المشاركة', 'اسم الطالب']],
+            body: rows,
+            startY: 25,
+            styles: { font: 'Courier', halign: 'right' }, // ملاحظة: PDF يحتاج خطوط خاصة للعربية، الكوريير يدعم الأساسيات
+            headStyles: { fillColor: [59, 130, 246] }
+        });
+
+        doc.save(`كشف_درجات_${currentSchool}.pdf`);
+    }
+</script>
 </body>
 </html>
