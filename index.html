@@ -3,194 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة مستواي - نسخة التصدير الرسمي</title>
+    <title>منظومة مستواي PRO | ليبيا</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-
     <style>
-        :root { --primary: #3b82f6; --dark: #0f172a; --card: #1e293b; --excel: #107c10; --pdf: #e11d48; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background: var(--dark); color: white; padding-bottom: 50px; }
-        .container { padding: 15px; max-width: 700px; margin: 0 auto; }
-        .card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; }
-        .btn { padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { background: var(--primary); color: white; width: 100%; }
-        .export-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .btn-excel { background: var(--excel); color: white; }
-        .btn-pdf { background: var(--pdf); color: white; }
-        .student-item { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; margin-bottom: 8px; border-right: 4px solid var(--primary); }
+        :root { --primary: #3b82f6; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 450px; }
+        .card { background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); }
+        h2 { text-align: center; font-size: 1.8rem; margin-bottom: 5px; }
+        h2 span { color: var(--primary); }
+        .subtitle { text-align: center; color: #94a3b8; font-size: 0.85rem; margin-bottom: 25px; }
+        input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 1rem; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; margin-top: 15px; }
+        .btn-blue { background: var(--primary); color: white; }
+        .btn-blue:hover { background: #2563eb; }
+        .error-msg { color: #f87171; background: rgba(248, 113, 113, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none; font-size: 0.85rem; text-align: center; }
+        .toggle-link { text-align: center; margin-top: 25px; font-size: 0.9rem; color: #94a3b8; }
+        .toggle-link a { color: var(--primary); text-decoration: none; font-weight: bold; }
+        #main-app { display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 style="text-align: center; margin: 25px 0;">مستواي <span style="color:var(--primary)">Export</span></h2>
+    <div id="auth-section" class="card">
+        <h2>مستواي <span>PRO</span></h2>
+        <div class="subtitle" id="auth-subtitle">المنظومة السحابية للمعلمين والطلبة</div>
+        
+        <div id="auth-error" class="error-msg"></div>
 
-    <div id="auth-box" class="card">
-        <h3>تسجيل الدخول / اشتراك</h3>
         <input type="email" id="email" placeholder="البريد الإلكتروني">
         <input type="password" id="password" placeholder="كلمة المرور">
-        <button class="btn btn-primary" onclick="processAuth()">دخول السحابة</button>
-        <p style="text-align: center; font-size: 0.8rem; margin-top: 10px;">سيطلب منك رقم الهاتف والمدرسة عند أول تسجيل</p>
+        
+        <div id="reg-fields" style="display: none;">
+            <input type="text" id="phone" placeholder="رقم الهاتف (اختياري)">
+            <input type="text" id="school-name" placeholder="اسم المدرسة">
+            <input type="text" id="city-name" placeholder="المدينة (مثال: الأبيار)">
+        </div>
+
+        <button id="auth-btn" class="btn btn-blue" onclick="handleAuth()">دخول المنظومة</button>
+        
+        <div class="toggle-link" id="toggle-area">
+            ليس لديك حساب؟ <a href="#" onclick="toggleUI(true)">أنشئ حسابك الآن</a>
+        </div>
     </div>
 
-    <div id="teacher-view" style="display:none;">
-        <div class="card">
-            <h4 id="school-info">المدرسة: جاري التحميل...</h4>
-            <div class="export-group">
-                <button class="btn btn-excel" onclick="exportToExcel()">
-                    💾 تصدير Excel
-                </button>
-                <button class="btn btn-pdf" onclick="exportToPDF()">
-                    📄 تصدير PDF
-                </button>
-            </div>
+    <div id="main-app" class="card">
+        <h3 id="welcome-msg" style="margin-bottom: 5px;">أهلاً بك</h3>
+        <p id="school-info" style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;"></p>
+        
+        <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <p style="font-size: 0.85rem; margin: 0;">البيانات الآن مزامنة مع السحابة ✅</p>
         </div>
 
-        <div class="card">
-            <h4>إضافة طالب</h4>
-            <input type="text" id="std-name" placeholder="اسم الطالب الرباعي">
-            <button class="btn btn-primary" onclick="addNewStudent()">+ إضافة للطيف التعليمي</button>
-        </div>
-
-        <div id="students-list"></div>
+        <button class="btn" style="background: #334155; color: white;" onclick="logout()">تسجيل الخروج</button>
     </div>
 </div>
 
 <script>
-    // --- إعدادات Firebase الخاصة بك يا بشمهندس أحمد ---
+    // 1. استبدل هذه النجوم بالقيم التي حصلت عليها من Firebase Console
     const firebaseConfig = {
-        apiKey: "AIzaSyB0LvixlLqNCwmvcsknedR3Aa8wuPetDlo",
+        apiKey: "AIzaSy...", 
         authDomain: "mostaway-libya.firebaseapp.com",
         databaseURL: "https://mostaway-libya-default-rtdb.firebaseio.com",
         projectId: "mostaway-libya",
-        storageBucket: "mostaway-libya.firebasestorage.app",
-        messagingSenderId: "808814665672",
-        appId: "1:808814665672:web:8fdeae9c1864179dfceafd"
+        storageBucket: "mostaway-libya.appspot.com",
+        messagingSenderId: "...",
+        appId: "..."
     };
+    
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
 
-    let allStudentsData = []; // لتخزين البيانات محلياً قبل التصدير
-    let currentSchool = "";
+    let isSignUp = false;
 
-    function processAuth() {
-        const email = document.getElementById('email').value;
-        const pass = document.getElementById('password').value;
-        auth.signInWithEmailAndPassword(email, pass).catch(err => {
-            if(err.code === 'auth/user-not-found') {
-                const school = prompt("اسم المدرسة:");
-                const phone = prompt("رقم الهاتف:");
-                auth.createUserWithEmailAndPassword(email, pass).then(res => {
-                    db.ref('users/' + res.user.uid).set({ email, school, phone, role: 'teacher' });
-                });
-            }
-        });
+    // تبديل الواجهة
+    function toggleUI(signUp) {
+        isSignUp = signUp;
+        document.getElementById('auth-subtitle').innerText = signUp ? "إنشاء حساب جديد للمعلم" : "المنظومة السحابية للمعلمين والطلبة";
+        document.getElementById('auth-btn').innerText = signUp ? "تفعيل الحساب" : "دخول المنظومة";
+        document.getElementById('reg-fields').style.display = signUp ? "block" : "none";
+        document.getElementById('toggle-area').innerHTML = signUp ? 
+            'لديك حساب بالفعل؟ <a href="#" onclick="toggleUI(false)">دخول</a>' : 
+            'ليس لديك حساب؟ <a href="#" onclick="toggleUI(true)">أنشئ حسابك الآن</a>';
     }
 
+    // الدخول والتسجيل
+    function handleAuth() {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        const errorBox = document.getElementById('auth-error');
+        errorBox.style.display = 'none';
+
+        if(!email || !pass) { showError("البريد وكلمة السر مطلوبان"); return; }
+
+        if(isSignUp) {
+            const school = document.getElementById('school-name').value;
+            const city = document.getElementById('city-name').value;
+            const phone = document.getElementById('phone').value;
+            if(!school || !city) { showError("يرجى إكمال بيانات المدرسة والمدينة"); return; }
+
+            // تعيين حالة الجلسة لتكون طويلة الأمد (تذكرني)
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
+                return auth.createUserWithEmailAndPassword(email, pass);
+            }).then(res => {
+                db.ref('users/' + res.user.uid).set({
+                    email, school, city, phone, role: 'teacher'
+                });
+            }).catch(err => showError("فشل التسجيل: " + err.message));
+
+        } else {
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
+                return auth.signInWithEmailAndPassword(email, pass);
+            }).catch(err => showError("البريد أو كلمة السر غير صحيحة"));
+        }
+    }
+
+    // مراقبة الدخول التلقائي
     auth.onAuthStateChanged(user => {
-        if(user) {
-            document.getElementById('auth-box').style.display = 'none';
-            document.getElementById('teacher-view').style.display = 'block';
-            db.ref('users/' + user.uid).once('value', snap => {
-                currentSchool = snap.val().school;
-                document.getElementById('school-info').innerText = "مدرسة: " + currentSchool;
-                loadStudents(currentSchool);
+        if (user) {
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            db.ref('users/' + user.uid).once('value').then(snap => {
+                const data = snap.val();
+                document.getElementById('welcome-msg').innerText = "أهلاً بك يا أستاذ";
+                document.getElementById('school-info').innerText = `مدرسة: ${data.school} | ${data.city} | هاتف: ${data.phone || 'غير مسجل'}`;
             });
         }
     });
 
-    function loadStudents(school) {
-        db.ref('schools/' + school + '/students').on('value', snap => {
-            const list = document.getElementById('students-list');
-            list.innerHTML = "";
-            allStudentsData = [];
-            snap.forEach(child => {
-                const s = child.val();
-                allStudentsData.push({ ...s, id: child.key });
-                list.innerHTML += `
-                    <div class="student-item">
-                        <p><b>${s.name}</b></p>
-                        <div style="display:flex; gap:10px; margin-top:5px;">
-                            <input type="number" value="${s.grades.p}" onchange="updateMark('${school}','${child.key}','p',this.value)" placeholder="P">
-                            <input type="number" value="${s.grades.m}" onchange="updateMark('${school}','${child.key}','m',this.value)" placeholder="M">
-                            <input type="number" value="${s.grades.f}" onchange="updateMark('${school}','${child.key}','f',this.value)" placeholder="F">
-                        </div>
-                    </div>`;
-            });
-        });
+    function showError(msg) {
+        const box = document.getElementById('auth-error');
+        box.innerText = msg;
+        box.style.display = 'block';
     }
 
-    function updateMark(school, id, type, val) {
-        db.ref(`schools/${school}/students/${id}/grades/${type}`).set(parseFloat(val) || 0);
-    }
-
-    function addNewStudent() {
-        const name = document.getElementById('std-name').value;
-        if(name) {
-            db.ref('schools/' + currentSchool + '/students').push({
-                name: name,
-                grades: { p:0, m:0, f:0 },
-                status: 'locked'
-            });
-            document.getElementById('std-name').value = "";
-        }
-    }
-
-    // --- وظائف التصدير (المميزات الجديدة) ---
-
-    function exportToExcel() {
-        if(allStudentsData.length === 0) return alert("لا توجد بيانات لتصديرها");
-        
-        const data = allStudentsData.map(s => ({
-            "اسم الطالب": s.name,
-            "المشاركة": s.grades.p,
-            "نصفي": s.grades.m,
-            "نهائي": s.grades.f,
-            "المجموع": (s.grades.p + s.grades.m + s.grades.f)
-        }));
-
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "كشف الدرجات");
-        XLSX.writeFile(wb, `كشف_درجات_${currentSchool}.xlsx`);
-    }
-
-    function exportToPDF() {
-        if(allStudentsData.length === 0) return alert("لا توجد بيانات لتصديرها");
-
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'p', format: 'a4' });
-        
-        // دعم اللغة العربية (تحتاج ملف خط، هنا سنستخدم الخط الافتراضي مع ترتيب النص)
-        doc.text(`كشف درجات مدرسة: ${currentSchool}`, 105, 15, { align: 'center' });
-
-        const rows = allStudentsData.map(s => [
-            (s.grades.p + s.grades.m + s.grades.f),
-            s.grades.f,
-            s.grades.m,
-            s.grades.p,
-            s.name
-        ]);
-
-        doc.autoTable({
-            head: [['المجموع', 'النهائي', 'النصفي', 'المشاركة', 'اسم الطالب']],
-            body: rows,
-            startY: 25,
-            styles: { font: 'Courier', halign: 'right' }, // ملاحظة: PDF يحتاج خطوط خاصة للعربية، الكوريير يدعم الأساسيات
-            headStyles: { fillColor: [59, 130, 246] }
-        });
-
-        doc.save(`كشف_درجات_${currentSchool}.pdf`);
+    function logout() {
+        auth.signOut().then(() => location.reload());
     }
 </script>
+
 </body>
 </html>
