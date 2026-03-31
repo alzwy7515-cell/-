@@ -2,285 +2,51 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة مستواي PRO | الإصدار الاحترافي</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
+    <title>درسي الأول في HTML</title>
     <style>
-        :root { --primary: #3b82f6; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #8b5cf6; --danger: #ef4444; --success: #10b981; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
-        
-        /* القائمة الجانبية (الستار) */
-        .sidebar { position: fixed; right: -300px; top: 0; width: 280px; height: 100%; background: var(--card); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; padding: 25px; box-shadow: -10px 0 30px rgba(0,0,0,0.7); border-left: 1px solid rgba(255,255,255,0.1); }
-        .sidebar.active { right: 0; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; z-index: 999; backdrop-filter: blur(4px); }
-        .overlay.active { display: block; }
-
-        .container { max-width: 1100px; margin: 0 auto; padding: 20px; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from {opacity: 0} to {opacity: 1} }
-
-        .card { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-        
-        input, select { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 1rem; transition: 0.3s; }
-        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
-        
-        .btn { padding: 14px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-blue { background: var(--primary); color: white; }
-        .btn-blue:hover { background: #2563eb; transform: translateY(-2px); }
-        .btn-green { background: var(--success); color: white; }
-        .btn-accent { background: var(--accent); color: white; }
-        
-        .ref-badge { background: linear-gradient(45deg, var(--accent), var(--primary)); color: white; padding: 8px 15px; border-radius: 10px; font-family: monospace; font-size: 1.1rem; display: block; text-align: center; margin-top: 10px; letter-spacing: 2px; }
-        
-        .hidden { display: none; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 30px 0; }
-        .menu-icon { font-size: 28px; cursor: pointer; background: var(--card); padding: 8px 12px; border-radius: 10px; }
-
-        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; margin-top: 15px; }
-        th { padding: 15px; color: #94a3b8; font-weight: 500; }
-        td { padding: 12px; background: rgba(255,255,255,0.03); border: none; }
-        tr td:first-child { border-radius: 0 12px 12px 0; }
-        tr td:last-child { border-radius: 12px 0 0 12px; }
-        
-        .grade-fail { color: var(--danger) !important; font-weight: bold; background: rgba(239, 68, 68, 0.1) !important; }
-        .grade-pass { color: var(--success); font-weight: bold; }
-
-        /* حاسبة المعدل الجانبية */
-        #gpa-calc-box { margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; }
+        /* هذا الجزء هو CSS لتجميل المظهر */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 350px;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+        }
+        h1 { color: #2c3e50; }
+        p { color: #7f8c8d; line-height: 1.6; }
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 25px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-<div class="overlay" onclick="toggleSidebar()"></div>
-
-<div class="sidebar" id="sidebar">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-        <h3>⚙️ الإعدادات</h3>
-        <span onclick="toggleSidebar()" style="cursor:pointer; font-size: 24px;">✕</span>
-    </div>
-    
-    <div class="card" style="background: rgba(0,0,0,0.2); border: 1px dashed var(--accent);">
-        <p style="margin:0; font-size: 0.85rem; color: #94a3b8;">رقمك المرجعي الموحد (ID):</p>
-        <span id="display-ref" class="ref-badge">جاري التوليد...</span>
+    <div class="card">
+        <h1>مرحباً بكم يا مبدعين! 👋</h1>
+        <p>لقد صممنا هذه الصفحة معاً باستخدام لغة HTML. البرمجة ليست مجرد أكواد، بل هي وسيلة لصناعة المستقبل.</p>
+        <a href="#" class="button">ابدأ رحلتك الآن</a>
     </div>
 
-    <div style="margin-top: 20px;">
-        <label>الاسم الظاهر</label>
-        <input type="text" id="set-name" placeholder="تعديل الاسم">
-        <label>رقم الهاتف</label>
-        <input type="text" id="set-phone" placeholder="تعديل الهاتف">
-        <button class="btn btn-blue" onclick="updateProfile()">✅ حفظ التعديلات</button>
-    </div>
-
-    <div id="gpa-calc-box">
-        <p style="font-size: 0.9rem;">🧮 حاسبة التحويل السريع (4.0)</p>
-        <input type="number" id="quick-gpa" placeholder="أدخل الدرجة من 100" oninput="quickCalc(this.value)">
-        <div id="gpa-res" style="text-align:center; font-weight:bold; color:var(--accent); margin-top:5px;"></div>
-    </div>
-
-    <button class="btn" style="background:var(--danger); color:white; margin-top: 40px;" onclick="logout()">🚪 تسجيل الخروج</button>
-</div>
-
-<div class="container">
-    <div class="header">
-        <h2 style="margin:0;">مستواي <span style="color:var(--primary)">PRO</span></h2>
-        <div class="menu-icon id="menu-btn" onclick="toggleSidebar()" class="hidden">☰</div>
-    </div>
-
-    <div id="auth-section" class="card">
-        <div id="login-view">
-            <h3 style="text-align: center;">تسجيل الدخول</h3>
-            <input type="email" id="login-email" placeholder="البريد الإلكتروني">
-            <input type="password" id="login-pass" placeholder="كلمة المرور">
-            <button class="btn btn-blue" onclick="login()">دخول للمنظومة</button>
-            <p style="text-align:center; cursor:pointer; color: var(--primary);" onclick="toggleAuth(true)">إنشاء حساب جديد (معلم/طالب)</p>
-        </div>
-
-        <div id="register-view" class="hidden">
-            <h3 style="text-align: center;">حساب جديد</h3>
-            <select id="reg-role">
-                <option value="teacher">👨‍🏫 أنا معلم (إدارة درجات)</option>
-                <option value="student">👨‍🎓 أنا طالب (عرض نتائج)</option>
-            </select>
-            <input type="text" id="reg-name" placeholder="الاسم الرباعي">
-            <input type="email" id="reg-email" placeholder="البريد الإلكتروني">
-            <input type="password" id="reg-pass" placeholder="كلمة المرور">
-            <input type="number" id="reg-phone" placeholder="رقم الهاتف">
-            <button class="btn btn-green" onclick="register()">إتمام التسجيل</button>
-            <p style="text-align:center; cursor:pointer;" onclick="toggleAuth(false)">لديك حساب؟ سجل دخولك</p>
-        </div>
-    </div>
-
-    <div id="teacher-view" class="hidden">
-        <div class="card">
-            <h3>🎛️ لوحة تحكم المعلم</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <input type="text" id="subject-name" placeholder="اسم المادة">
-                <select id="grade-system">
-                    <option value="100">نظام المئة (100%)</option>
-                    <option value="4">نظام المعدل (4.0)</option>
-                </select>
-            </div>
-            <input type="number" id="std-count" placeholder="عدد الطلاب في الفصل" value="1">
-            <button class="btn btn-blue" onclick="generateTable()">🏗️ إنشاء الجدول الآن</button>
-        </div>
-
-        <div id="table-card" class="card hidden" style="padding: 10px;">
-            <div style="padding: 10px;">
-                <input type="text" id="search-box" onkeyup="searchTable()" placeholder="🔍 ابحث عن طالب (بالاسم أو بالرقم المرجعي ID)..." style="background: rgba(255,255,255,0.05); border: 1px solid var(--primary);">
-            </div>
-            <div style="overflow-x:auto">
-                <table id="main-table">
-                    <thead>
-                        <tr>
-                            <th>الاسم / ID</th>
-                            <th>مشاركة</th>
-                            <th>اختبار 1</th>
-                            <th>اختبار 2</th>
-                            <th>نهائي</th>
-                            <th>المجموع</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="student-view" class="hidden">
-        <div class="card" style="text-align: center;">
-            <h2 id="welcome-msg">مرحباً بك! 🎓</h2>
-            <p style="color: #94a3b8;">استخدم الرقم المرجعي الخاص بك لتلقي الدرجات من المعلم.</p>
-            <div id="student-grades-container" class="card" style="background: rgba(0,0,0,0.2);">
-                <p>لا توجد نتائج منشورة لك حتى الآن.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    // Firebase Config
-    const firebaseConfig = {
-        apiKey: "AIzaSyB0LvixlLqNCwmvcsknedR3Aa8wuPetDlo",
-        authDomain: "mostaway-libya.firebaseapp.com",
-        databaseURL: "https://mostaway-libya-default-rtdb.firebaseio.com",
-        projectId: "mostaway-libya",
-        storageBucket: "mostaway-libya.firebasestorage.app",
-        messagingSenderId: "808814665672",
-        appId: "1:808814665672:web:8fdeae9c1864179dfceafd"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    // القائمة الجانبية
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.querySelector('.overlay').classList.toggle('active');
-    }
-
-    function toggleAuth(isReg) {
-        document.getElementById('login-view').classList.toggle('hidden', isReg);
-        document.getElementById('register-view').classList.toggle('hidden', !isReg);
-    }
-
-    // التسجيل والدخول
-    function register() {
-        const email = document.getElementById('reg-email').value;
-        const pass = document.getElementById('reg-pass').value;
-        const role = document.getElementById('reg-role').value;
-        const name = document.getElementById('reg-name').value;
-        const phone = document.getElementById('reg-phone').value;
-
-        if(!email || pass.length < 6) return alert("تأكد من البريد وكلمة المرور (6 رموز)");
-
-        auth.createUserWithEmailAndPassword(email, pass).then(res => {
-            const refID = "MST-" + Math.random().toString(36).substr(2, 5).toUpperCase();
-            db.ref('users/' + res.user.uid).set({ name, phone, role, refID });
-        }).catch(e => alert(e.message));
-    }
-
-    function login() {
-        auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-pass').value)
-        .catch(e => alert("خطأ في بيانات الدخول"));
-    }
-
-    auth.onAuthStateChanged(user => {
-        if(user) {
-            document.getElementById('auth-section').classList.add('hidden');
-            document.getElementById('menu-btn')?.classList.remove('hidden');
-            db.ref('users/' + user.uid).on('value', s => {
-                const d = s.val();
-                if(d) {
-                    document.getElementById('display-ref').innerText = d.refID || "بدون ID";
-                    document.getElementById('set-name').value = d.name;
-                    document.getElementById('set-phone').value = d.phone;
-                    if(d.role === 'teacher') document.getElementById('teacher-view').classList.remove('hidden');
-                    else {
-                        document.getElementById('student-view').classList.remove('hidden');
-                        document.getElementById('welcome-msg').innerText = `مرحباً بك يا ${d.name.split(' ')[0]}! 🎓`;
-                    }
-                }
-            });
-        }
-    });
-
-    // إدارة الجدول والبحث المزدوج
-    function generateTable() {
-        const count = document.getElementById('std-count').value;
-        const tbody = document.getElementById('table-body');
-        tbody.innerHTML = '';
-        for(let i=0; i<count; i++) {
-            tbody.innerHTML += `<tr>
-                <td><input type="text" class="st-name" placeholder="الاسم أو ID الطالب"></td>
-                <td><input type="number" class="st-p" value="0" oninput="calc(this)"></td>
-                <td><input type="number" class="st-e1" value="0" oninput="calc(this)"></td>
-                <td><input type="number" class="st-e2" value="0" oninput="calc(this)"></td>
-                <td><input type="number" class="st-f" value="0" oninput="calc(this)"></td>
-                <td class="st-total" style="font-size:1.1rem">0</td>
-            </tr>`;
-        }
-        document.getElementById('table-card').classList.remove('hidden');
-    }
-
-    function calc(el) {
-        const tr = el.closest('tr');
-        const sys = document.getElementById('grade-system').value;
-        const sum = (parseFloat(tr.querySelector('.st-p').value)||0) + (parseFloat(tr.querySelector('.st-e1').value)||0) + (parseFloat(tr.querySelector('.st-e2').value)||0) + (parseFloat(tr.querySelector('.st-f').value)||0);
-        let res = sys === "4" ? ((sum/100)*4).toFixed(2) : sum;
-        const out = tr.querySelector('.st-total');
-        out.innerText = res;
-        out.className = "st-total " + (res < (sys === "4" ? 2 : 50) ? 'grade-fail' : 'grade-pass');
-    }
-
-    // ميزة البحث المزدوج (اسم أو رقم مرجعي)
-    function searchTable() {
-        const q = document.getElementById('search-box').value.toLowerCase();
-        document.querySelectorAll('#table-body tr').forEach(r => {
-            const val = r.querySelector('.st-name').value.toLowerCase();
-            r.style.display = val.includes(q) ? '' : 'none';
-        });
-    }
-
-    function quickCalc(val) {
-        const res = ((parseFloat(val)||0)/100*4).toFixed(2);
-        document.getElementById('gpa-res').innerText = "المعدل: " + res;
-    }
-
-    function updateProfile() {
-        db.ref('users/' + auth.currentUser.uid).update({
-            name: document.getElementById('set-name').value,
-            phone: document.getElementById('set-phone').value
-        }).then(() => {
-            alert("✅ تم تحديث بياناتك بنجاح");
-            toggleSidebar();
-        });
-    }
-
-    function logout() { auth.signOut().then(() => location.reload()); }
-</script>
 </body>
 </html>
