@@ -1,52 +1,1000 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>درسي الأول في HTML</title>
-    <style>
-        /* هذا الجزء هو CSS لتجميل المظهر */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .card {
-            background-color: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 350px;
-            transition: transform 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-10px);
-        }
-        h1 { color: #2c3e50; }
-        p { color: #7f8c8d; line-height: 1.6; }
-        .button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 25px;
-            background-color: #3498db;
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: bold;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ختم برو | أداة العلامة المائية المتقدمة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#D4A536;
+  --primary-dark:#8f7229;
+  --bg-dark:#0F1117;
+  --bg-panel:#161B22;
+  --bg-input:#21262D;
+  --border:#30363D;
+  --text:#C9D1D9;
+  --text-muted:#8B949E;
+  --accent:#58A6FF;
+  --success:#3FB950;
+  --danger:#F85149;
+  --warning:#FFA657;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg-dark);color:var(--text);
+  font-family:'Tajawal',Tahoma,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;
+  background:linear-gradient(135deg, #0F1117 0%, #161B22 100%);
+  min-height:100vh;
+}
+body{padding-bottom:40px;}
+
+header{
+  padding:24px 20px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(15,17,23,0.95) 0%, rgba(22,27,34,0.8) 100%);
+  position:sticky;top:0;z-index:30;
+  backdrop-filter:blur(10px);
+}
+
+.header-content{
+  max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;
+}
+
+.logo{
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg, var(--primary) 0%, #E8C547 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;color:#20180a;font-size:24px;
+  box-shadow:0 8px 24px rgba(212,165,54,0.25);
+  flex-shrink:0;
+}
+
+.brand{flex:1;}
+.brand h1{margin:0;font-size:24px;font-weight:900;
+  background:linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.brand p{margin:2px 0 0;font-size:12px;color:var(--text-muted);}
+
+.version-badge{
+  background:rgba(212,165,54,0.15);border:1px solid var(--primary);
+  color:var(--primary);padding:4px 12px;border-radius:20px;
+  font-size:11px;font-weight:700;font-family:'IBM Plex Mono';
+}
+
+main{max-width:1200px;margin:0 auto;padding:24px 16px;}
+
+.layout{display:grid;grid-template-columns:1fr 320px;gap:24px;}
+
+.cards{display:flex;flex-direction:column;gap:20px;}
+
+.card{
+  background:linear-gradient(135deg, var(--bg-panel) 0%, rgba(22,27,34,0.7) 100%);
+  border:1px solid var(--border);
+  border-radius:12px;padding:24px;
+  backdrop-filter:blur(8px);
+  transition:all .3s ease;
+}
+.card:hover{border-color:var(--primary);box-shadow:0 8px 32px rgba(212,165,54,0.12);}
+
+.card h2{
+  font-size:14px;margin:0 0 18px;color:var(--primary);
+  text-transform:uppercase;letter-spacing:2px;font-weight:800;
+  display:flex;align-items:center;gap:10px;
+}
+.card h2 .num{
+  font-family:'IBM Plex Mono';font-size:11px;color:var(--text-muted);
+  background:var(--bg-input);padding:4px 8px;border-radius:4px;
+}
+.card h2::before{content:'';display:block;width:4px;height:4px;
+  background:var(--primary);border-radius:50%;}
+
+label.field-label{
+  display:block;font-size:13px;color:var(--text);margin-bottom:10px;
+  font-weight:600;text-transform:uppercase;letter-spacing:0.5px;
+}
+
+.control-group{margin-bottom:18px;}
+.control-group:last-child{margin-bottom:0;}
+
+input[type=text]{
+  width:100%;background:var(--bg-input);border:1px solid var(--border);
+  color:var(--text);border-radius:8px;padding:12px 14px;font-size:15px;
+  font-family:'Tajawal',sans-serif;transition:.2s;
+}
+input[type=text]:focus{
+  outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(212,165,54,0.1);
+}
+
+.upload-zone{
+  border:2px dashed var(--border);border-radius:12px;padding:32px 20px;
+  text-align:center;cursor:pointer;transition:.3s;background:rgba(88,166,255,0.02);
+}
+.upload-zone:active{
+  border-color:var(--primary);background:rgba(212,165,54,0.08);transform:scale(0.98);
+}
+.upload-zone .icon{font-size:48px;margin-bottom:12px;display:block;animation:float 3s ease-in-out infinite;}
+.upload-zone .text{font-size:14px;font-weight:600;margin-bottom:4px;}
+.upload-zone .hint{color:var(--text-muted);font-size:12px;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+
+input[type=file]{display:none;}
+
+.file-chip{
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(88,166,255,0.08);border:1px solid var(--accent);
+  border-radius:8px;padding:12px 14px;font-size:13px;margin-top:12px;
+}
+.file-chip .name{flex:1;color:var(--accent);font-weight:600;}
+.file-chip button{
+  background:none;border:none;color:var(--danger);font-size:13px;
+  cursor:pointer;font-family:'Tajawal';font-weight:700;
+}
+
+.seg{
+  display:grid;grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));gap:8px;
+}
+.seg button{
+  background:var(--bg-input);border:1px solid var(--border);
+  color:var(--text-muted);padding:12px;border-radius:8px;
+  font-size:12px;font-weight:700;cursor:pointer;
+  font-family:'Tajawal';transition:.2s;
+}
+.seg button:active{transform:scale(0.95);}
+.seg button.active{
+  background:linear-gradient(135deg, var(--primary) 0%, #E8C547 100%);
+  color:#20180a;border-color:var(--primary);box-shadow:0 4px 12px rgba(212,165,54,0.3);
+}
+
+.grid-pos{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;
+}
+.pos-btn{
+  aspect-ratio:1;background:var(--bg-input);border:1px solid var(--border);
+  border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:.2s;
+}
+.pos-btn:active{transform:scale(0.9);}
+.pos-btn.active{
+  background:linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+  border-color:var(--accent);color:#fff;
+}
+
+.slider-group{
+  display:flex;align-items:center;gap:12px;margin-top:14px;
+}
+.slider-group label{
+  font-size:12px;color:var(--text-muted);min-width:90px;font-weight:600;
+}
+input[type=range]{
+  flex:1;accent-color:var(--primary);cursor:pointer;
+  height:6px;border-radius:3px;
+  -webkit-appearance:none;appearance:none;
+  background:var(--bg-input);
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:18px;height:18px;border-radius:50%;background:var(--primary);
+  cursor:pointer;box-shadow:0 0 8px rgba(212,165,54,0.4);
+}
+input[type=range]::-moz-range-thumb{
+  width:18px;height:18px;border-radius:50%;background:var(--primary);
+  cursor:pointer;border:none;box-shadow:0 0 8px rgba(212,165,54,0.4);
+}
+
+.val{
+  font-family:'IBM Plex Mono';font-size:13px;color:var(--primary);
+  min-width:44px;text-align:center;font-weight:700;
+  background:var(--bg-input);padding:6px 10px;border-radius:6px;
+}
+
+.color-picker{
+  display:flex;align-items:center;gap:12px;margin-top:14px;
+}
+input[type=color]{
+  width:50px;height:50px;border:2px solid var(--border);
+  border-radius:8px;cursor:pointer;background:none;padding:0;
+}
+input[type=color]::-webkit-color-swatch{border-radius:6px;}
+
+.toggle-group{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg-input);padding:14px;border-radius:8px;margin-top:14px;
+  border:1px solid var(--border);
+}
+.toggle-group .info .label{
+  font-size:13px;color:var(--text);font-weight:600;display:block;
+}
+.toggle-group .info .desc{
+  font-size:11px;color:var(--text-muted);margin-top:2px;
+}
+
+.switch{
+  position:relative;width:50px;height:28px;flex-shrink:0;
+}
+.switch input{
+  position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:2;
+}
+.switch .track{
+  position:absolute;inset:0;background:var(--border);border-radius:20px;
+  transition:.3s;
+}
+.switch .thumb{
+  position:absolute;top:3px;left:3px;width:22px;height:22px;
+  border-radius:50%;background:var(--bg-dark);transition:.3s;
+}
+.switch input:checked ~ .track{
+  background:linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+}
+.switch input:checked ~ .thumb{
+  background:#fff;transform:translateX(22px);
+}
+
+.sidebar{
+  display:flex;flex-direction:column;gap:20px;
+}
+
+.preview-card{
+  background:linear-gradient(135deg, var(--bg-panel) 0%, rgba(22,27,34,0.7) 100%);
+  border:1px solid var(--border);border-radius:12px;padding:20px;
+  backdrop-filter:blur(8px);
+}
+.preview-card h3{
+  margin:0 0 14px;font-size:12px;color:var(--primary);
+  text-transform:uppercase;letter-spacing:1.5px;font-weight:800;
+}
+
+.preview-wrap{
+  width:100%;aspect-ratio:3/4;background:#000;
+  border-radius:8px;overflow:hidden;display:flex;
+  align-items:center;justify-content:center;
+  border:1px solid var(--border);
+}
+canvas{max-width:100%;max-height:100%;display:block;}
+.preview-empty{
+  color:var(--text-muted);font-size:12px;text-align:center;
+}
+
+.presets-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px;
+}
+.preset-btn{
+  background:var(--bg-input);border:1px solid var(--border);
+  color:var(--text);padding:10px 8px;border-radius:8px;
+  font-size:11px;cursor:pointer;font-family:'Tajawal';
+  font-weight:600;transition:.2s;text-align:center;
+}
+.preset-btn:active{
+  border-color:var(--primary);background:var(--bg-panel);
+  box-shadow:0 0 12px rgba(212,165,54,0.15);
+}
+
+.cta{
+  width:100%;background:linear-gradient(135deg, var(--primary) 0%, #E8C547 100%);
+  color:#20180a;border:none;border-radius:10px;padding:16px;
+  font-size:15px;font-weight:900;cursor:pointer;
+  font-family:'Tajawal';display:flex;align-items:center;
+  justify-content:center;gap:8px;transition:.3s;margin-top:20px;
+  box-shadow:0 8px 24px rgba(212,165,54,0.25);
+}
+.cta:active{transform:translateY(2px);box-shadow:0 4px 12px rgba(212,165,54,0.15);}
+.cta:disabled{
+  background:var(--bg-input);color:var(--text-muted);cursor:not-allowed;
+  box-shadow:none;
+}
+
+.cta.stamping .icon{
+  animation:stamp 0.6s ease;
+}
+@keyframes stamp{
+  0%{transform:translateY(-12px) rotate(-15deg);opacity:0;}
+  60%{transform:translateY(2px) rotate(5deg);}
+  100%{transform:translateY(0) rotate(0);opacity:1;}
+}
+
+.progress{
+  height:4px;background:var(--bg-input);border-radius:2px;
+  overflow:hidden;margin-top:12px;display:none;
+}
+.progress.show{display:block;}
+.progress .bar{
+  height:100%;width:0%;background:linear-gradient(90deg, var(--success) 0%, var(--accent) 100%);
+  transition:width .2s;
+}
+
+.status{
+  font-size:12px;color:var(--text-muted);margin-top:8px;text-align:center;
+}
+
+.download-box{
+  margin-top:12px;padding:12px;border:1px solid var(--success);
+  border-radius:8px;background:rgba(63,185,80,0.08);display:none;text-align:center;
+}
+.download-box.show{display:block;}
+.download-box .msg{
+  font-size:13px;color:var(--success);font-weight:600;margin-bottom:8px;
+}
+.download-box a{
+  display:inline-block;background:linear-gradient(135deg, var(--success) 0%, #26d46f 100%);
+  color:#fff;text-decoration:none;font-weight:800;padding:10px 20px;
+  border-radius:8px;font-size:13px;
+}
+
+.reset-btn{
+  background:none;border:1px solid var(--text-muted);color:var(--text-muted);
+  padding:8px 12px;border-radius:8px;font-size:11px;cursor:pointer;
+  font-family:'Tajawal';font-weight:700;width:100%;margin-top:8px;
+  transition:.2s;
+}
+.reset-btn:active{border-color:var(--danger);color:var(--danger);}
+
+footer{
+  text-align:center;color:var(--text-muted);font-size:11px;padding:20px;
+  border-top:1px solid var(--border);margin-top:40px;
+}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{flex-direction:row;}
+}
+</style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>مرحباً بكم يا مبدعين! 👋</h1>
-        <p>لقد صممنا هذه الصفحة معاً باستخدام لغة HTML. البرمجة ليست مجرد أكواد، بل هي وسيلة لصناعة المستقبل.</p>
-        <a href="#" class="button">ابدأ رحلتك الآن</a>
+<header>
+  <div class="header-content">
+    <div class="logo">خ</div>
+    <div class="brand">
+      <h1>KHOTM PRO</h1>
+      <p>أداة العلامة المائية المتقدمة</p>
+    </div>
+    <div class="version-badge">v2.0 PRO</div>
+  </div>
+</header>
+
+<main>
+<div class="layout">
+
+<div class="cards">
+
+  <div class="card">
+    <h2><span class="num">01</span> النص والاسم</h2>
+    <div class="control-group">
+      <label class="field-label">اكتب الاسم أو النص</label>
+      <input type="text" id="wmText" placeholder="أدخل النص هنا...">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">02</span> اختر الملف</h2>
+    <div class="upload-zone" id="uploadZone">
+      <span class="icon">📸</span>
+      <div class="text">اختر صورة أو فيديو</div>
+      <div class="hint">JPG · PNG · MP4 · WEBM</div>
+    </div>
+    <input type="file" id="fileInput" accept="image/*,video/*">
+    <div id="fileChip" style="display:none;"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">03</span> نمط الحركة</h2>
+    <div class="seg" id="modeSeg">
+      <button data-mode="static" class="active">🔧 ثابتة</button>
+      <button data-mode="bounce">🎾 ارتداد</button>
+      <button data-mode="marquee">➡️ تمرير</button>
+      <button data-mode="fade">💫 وميض</button>
     </div>
 
+    <div id="staticPosBlock">
+      <label class="field-label" style="margin-top:18px;">موضع العلامة</label>
+      <div class="grid-pos" id="grid9"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">04</span> الألوان والتأثيرات</h2>
+    
+    <div class="control-group">
+      <label class="field-label">اللون الأساسي</label>
+      <div class="color-picker">
+        <input type="color" id="wmColor" value="#ffffff">
+        <div style="flex:1;">
+          <div style="font-size:13px;color:var(--text);font-weight:600;margin-bottom:4px;">أبيض #FFFFFF</div>
+          <div style="font-size:11px;color:var(--text-muted);">اضغط لاختيار لون</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toggle-group">
+      <div class="info">
+        <span class="label">حد سميك</span>
+        <span class="desc">Outline Effect</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="wmOutline" checked>
+        <div class="track"></div>
+        <div class="thumb"></div>
+      </label>
+    </div>
+
+    <div class="toggle-group">
+      <div class="info">
+        <span class="label">ظل خلفي</span>
+        <span class="desc">Shadow Effect</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="wmShadow">
+        <div class="track"></div>
+        <div class="thumb"></div>
+      </label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">05</span> الحجم والشفافية</h2>
+    
+    <div class="slider-group">
+      <label>حجم الخط</label>
+      <input type="range" id="wmSize" min="14" max="100" value="32">
+      <span class="val" id="wmSizeVal">32</span>
+    </div>
+
+    <div class="slider-group">
+      <label>الشفافية</label>
+      <input type="range" id="wmOpacity" min="10" max="100" value="85">
+      <span class="val" id="wmOpacityVal">85%</span>
+    </div>
+
+    <div class="slider-group">
+      <label>عدد التكرارات</label>
+      <input type="range" id="wmRepeat" min="1" max="16" value="1">
+      <span class="val" id="wmRepeatVal">1</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">06</span> إعدادات سريعة</h2>
+    <div class="presets-grid">
+      <button class="preset-btn" data-preset="bright">✨ مضيء</button>
+      <button class="preset-btn" data-preset="dark">🌙 داكن</button>
+      <button class="preset-btn" data-preset="gold">🏆 ذهبي</button>
+      <button class="preset-btn" data-preset="red">❤️ أحمر</button>
+      <button class="preset-btn" data-preset="blue">💙 أزرق</button>
+      <button class="preset-btn" data-preset="green">💚 أخضر</button>
+    </div>
+    <button class="reset-btn" id="resetBtn">↻ إعادة تعيين</button>
+  </div>
+
+</div>
+
+<div class="sidebar">
+  
+  <div class="preview-card">
+    <h3>معاينة حية</h3>
+    <div class="preview-wrap" id="previewWrap">
+      <div class="preview-empty" id="previewEmpty">اختر ملف لبدء المعاينة</div>
+      <canvas id="canvas" style="display:none;"></canvas>
+    </div>
+  </div>
+
+  <div class="preview-card">
+    <button class="cta" id="applyBtn" disabled>
+      <span class="icon">🔖</span>
+      <span id="applyBtnText">طبّق واحفظ</span>
+    </button>
+    <div class="progress" id="progress"><div class="bar" id="progressBar"></div></div>
+    <div class="status" id="statusText"></div>
+    <div class="download-box" id="downloadBox">
+      <div class="msg">✅ الملف جاهز!</div>
+      <a id="downloadLink" download>تنزيل الآن</a>
+    </div>
+  </div>
+
+</div>
+
+</div>
+</main>
+
+<footer>🔒 معالجة آمنة 100% داخل جهازك • بدون خوادم • بدون رفع ملفات</footer>
+
+<video id="srcVideo" style="display:none;" playsinline muted></video>
+<img id="srcImage" style="display:none;">
+
+<script>
+(function(){
+  const fileInput = document.getElementById('fileInput');
+  const uploadZone = document.getElementById('uploadZone');
+  const fileChip = document.getElementById('fileChip');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const previewEmpty = document.getElementById('previewEmpty');
+  const srcVideo = document.getElementById('srcVideo');
+  const srcImage = document.getElementById('srcImage');
+  const applyBtn = document.getElementById('applyBtn');
+  const progress = document.getElementById('progress');
+  const progressBar = document.getElementById('progressBar');
+  const statusText = document.getElementById('statusText');
+  const downloadBox = document.getElementById('downloadBox');
+  const downloadLink = document.getElementById('downloadLink');
+  
+  const wmText = document.getElementById('wmText');
+  const wmColor = document.getElementById('wmColor');
+  const wmSize = document.getElementById('wmSize');
+  const wmSizeVal = document.getElementById('wmSizeVal');
+  const wmOpacity = document.getElementById('wmOpacity');
+  const wmOpacityVal = document.getElementById('wmOpacityVal');
+  const wmRepeat = document.getElementById('wmRepeat');
+  const wmRepeatVal = document.getElementById('wmRepeatVal');
+  const wmOutline = document.getElementById('wmOutline');
+  const wmShadow = document.getElementById('wmShadow');
+  const modeSeg = document.getElementById('modeSeg');
+  const staticPosBlock = document.getElementById('staticPosBlock');
+  const grid9 = document.getElementById('grid9');
+  const resetBtn = document.getElementById('resetBtn');
+
+  const arabicNumbers = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  function toArabic(n){
+    return String(n).split('').map(d=>arabicNumbers[parseInt(d,10)]).join('');
+  }
+
+  let fileType = null;
+  let mode = 'static';
+  let position = 'bc';
+  let rafId = null;
+  let animStart = null;
+  let objectUrl = null;
+
+  // Grid positions
+  const positions = [
+    ['tl','↖️'],['tc','⬆️'],['tr','↗️'],
+    ['cl','⬅️'],['cc','⊙'],['cr','➡️'],
+    ['bl','↙️'],['bc','⬇️'],['br','↘️']
+  ];
+  positions.forEach(([key, emoji])=>{
+    const b = document.createElement('div');
+    b.className = 'pos-btn' + (key==='bc'?' active':'');
+    b.dataset.pos = key;
+    b.textContent = emoji;
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.pos-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      position = key;
+      drawStaticPreview();
+    });
+    grid9.appendChild(b);
+  });
+
+  // Mode selection
+  modeSeg.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      modeSeg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+      btn.classList.add('active');
+      mode = btn.dataset.mode;
+      staticPosBlock.style.display = (mode==='static') ? 'block' : 'none';
+      restartPreviewAnimation();
+    });
+  });
+
+  // Event listeners
+  wmSize.addEventListener('input', ()=>{ wmSizeVal.textContent = wmSize.value; refreshStatic(); });
+  wmOpacity.addEventListener('input', ()=>{ wmOpacityVal.textContent = wmOpacity.value+'%'; refreshStatic(); });
+  wmRepeat.addEventListener('input', ()=>{ wmRepeatVal.textContent = toArabic(wmRepeat.value); refreshStatic(); });
+  wmColor.addEventListener('input', refreshStatic);
+  wmText.addEventListener('input', refreshStatic);
+  wmOutline.addEventListener('change', refreshStatic);
+  wmShadow.addEventListener('change', refreshStatic);
+
+  uploadZone.addEventListener('click', ()=>fileInput.click());
+  fileInput.addEventListener('change', (e)=>{
+    const f = e.target.files[0];
+    if(f) loadFile(f);
+  });
+
+  // Presets
+  document.querySelectorAll('.preset-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const p = btn.dataset.preset;
+      const presets = {
+        bright: {color:'#FFFFFF',opacity:100,outline:true,shadow:false},
+        dark: {color:'#000000',opacity:90,outline:false,shadow:true},
+        gold: {color:'#D4A536',opacity:85,outline:true,shadow:true},
+        red: {color:'#F85149',opacity:80,outline:true,shadow:false},
+        blue: {color:'#58A6FF',opacity:85,outline:true,shadow:true},
+        green: {color:'#3FB950',opacity:85,outline:true,shadow:false},
+      };
+      if(presets[p]){
+        const pr = presets[p];
+        wmColor.value = pr.color;
+        wmOpacity.value = pr.opacity;
+        wmOutline.checked = pr.outline;
+        wmShadow.checked = pr.shadow;
+        wmOpacityVal.textContent = pr.opacity+'%';
+        refreshStatic();
+      }
+    });
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    wmText.value = '';
+    wmColor.value = '#ffffff';
+    wmSize.value = 32;
+    wmSizeVal.textContent = '32';
+    wmOpacity.value = 85;
+    wmOpacityVal.textContent = '85%';
+    wmRepeat.value = 1;
+    wmRepeatVal.textContent = '١';
+    wmOutline.checked = true;
+    wmShadow.checked = false;
+    mode = 'static';
+    position = 'bc';
+    modeSeg.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('active',i===0));
+    document.querySelectorAll('.pos-btn').forEach(b=>b.classList.toggle('active',b.dataset.pos==='bc'));
+    staticPosBlock.style.display = 'block';
+    refreshStatic();
+  });
+
+  function refreshStatic(){
+    if(fileType==='image' && mode==='static') drawStaticPreview();
+  }
+
+  function loadFile(f){
+    if(objectUrl) URL.revokeObjectURL(objectUrl);
+    objectUrl = URL.createObjectURL(f);
+    fileChip.style.display = 'flex';
+    fileChip.innerHTML = '<span class="name">📎 '+escapeHtml(f.name)+'</span><button id="clearFile">✕</button>';
+    document.getElementById('clearFile').addEventListener('click', (ev)=>{
+      ev.stopPropagation();
+      resetFile();
+    });
+
+    if(f.type.startsWith('image/')){
+      fileType = 'image';
+      srcImage.onload = ()=>{
+        canvas.width = srcImage.naturalWidth;
+        canvas.height = srcImage.naturalHeight;
+        previewEmpty.style.display='none';
+        canvas.style.display='block';
+        applyBtn.disabled = false;
+        restartPreviewAnimation();
+      };
+      srcImage.src = objectUrl;
+    } else if(f.type.startsWith('video/')){
+      fileType = 'video';
+      srcVideo.src = objectUrl;
+      srcVideo.onloadedmetadata = ()=>{
+        canvas.width = srcVideo.videoWidth;
+        canvas.height = srcVideo.videoHeight;
+        previewEmpty.style.display='none';
+        canvas.style.display='block';
+        applyBtn.disabled = false;
+        srcVideo.currentTime = 0;
+      };
+      srcVideo.onseeked = ()=>drawFrame();
+    }
+  }
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function resetFile(){
+    fileType = null;
+    fileInput.value = '';
+    fileChip.style.display='none';
+    canvas.style.display='none';
+    previewEmpty.style.display='block';
+    applyBtn.disabled = true;
+    downloadBox.classList.remove('show');
+    cancelAnimationFrame(rafId);
+  }
+
+  function getWMParams(t){
+    const text = (wmText.value || '').trim() || 'Watermark';
+    const size = Math.max(16, Math.round(canvas.width/25) * (parseInt(wmSize.value)/32));
+    const color = wmColor.value;
+    const opacity = parseInt(wmOpacity.value)/100;
+    const outline = wmOutline.checked;
+    const shadow = wmShadow.checked;
+    const repeat = Math.max(1,Math.min(16,parseInt(wmRepeat.value)));
+    return {text, size, color, opacity, outline, shadow, repeat};
+  }
+
+  function positionCoords(key, pad){
+    const w = canvas.width, h = canvas.height;
+    const map = {
+      tl: [pad, pad, 'left', 'top'],
+      tc: [w/2, pad, 'center', 'top'],
+      tr: [w-pad, pad, 'right', 'top'],
+      cl: [pad, h/2, 'left', 'middle'],
+      cc: [w/2, h/2, 'center', 'middle'],
+      cr: [w-pad, h/2, 'right', 'middle'],
+      bl: [pad, h-pad, 'left', 'bottom'],
+      bc: [w/2, h-pad, 'center', 'bottom'],
+      br: [w-pad, h-pad, 'right', 'bottom'],
+    };
+    return map[key];
+  }
+
+  function paintWatermark(t){
+    const {text, size, color, opacity, outline, shadow, repeat} = getWMParams(t);
+    ctx.save();
+    ctx.font = 'bold '+Math.round(size)+'px Tajawal, Tahoma, Arial, sans-serif';
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = color;
+    ctx.strokeStyle = outline ? 'rgba(0,0,0,0.6)' : 'transparent';
+    ctx.lineWidth = outline ? Math.max(2,size/12) : 0;
+    ctx.direction = 'rtl';
+
+    const pad = Math.max(15, canvas.width*0.03);
+
+    if(mode==='static'){
+      const [x,y,align,baseline] = positionCoords(position, pad);
+      ctx.textAlign = align; ctx.textBaseline = baseline;
+      
+      if(repeat > 1){
+        const step = Math.round(canvas.height / repeat);
+        for(let i=0; i<repeat; i++){
+          const yy = y + (i-Math.floor(repeat/2))*step;
+          if(yy>0 && yy<canvas.height){
+            if(shadow){
+              ctx.globalAlpha = opacity*0.3;
+              ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+              ctx.lineWidth = Math.max(3,size/10);
+              ctx.strokeText(text, x+2, yy+2);
+              ctx.globalAlpha = opacity;
+              ctx.strokeStyle = outline ? 'rgba(0,0,0,0.6)' : 'transparent';
+            }
+            ctx.strokeText(text, x, yy);
+            ctx.fillText(text, x, yy);
+          }
+        }
+      } else {
+        if(shadow){
+          ctx.globalAlpha = opacity*0.3;
+          ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+          ctx.lineWidth = Math.max(3,size/10);
+          ctx.strokeText(text, x+2, y+2);
+          ctx.globalAlpha = opacity;
+          ctx.strokeStyle = outline ? 'rgba(0,0,0,0.6)' : 'transparent';
+        }
+        ctx.strokeText(text, x, y);
+        ctx.fillText(text, x, y);
+      }
+    } else if(mode==='bounce'){
+      const metrics = ctx.measureText(text);
+      const tw = metrics.width, th = size;
+      const speed = 0.00025;
+      const rangeX = canvas.width - tw - pad*2;
+      const rangeY = canvas.height - th - pad*2;
+      const px = Math.abs(((t*speed*canvas.width*0.6) % (rangeX*2)) - rangeX);
+      const py = Math.abs(((t*speed*canvas.height*0.5) % (rangeY*2)) - rangeY);
+      ctx.textAlign='left'; ctx.textBaseline='top';
+      
+      for(let i=0; i<repeat; i++){
+        const offset = (i-Math.floor(repeat/2))*40;
+        if(shadow){
+          ctx.globalAlpha = opacity*0.3;
+          ctx.strokeText(text, pad+px+offset, pad+py+offset+2);
+          ctx.globalAlpha = opacity;
+        }
+        ctx.strokeText(text, pad+px+offset, pad+py+offset);
+        ctx.fillText(text, pad+px+offset, pad+py+offset);
+      }
+    } else if(mode==='marquee'){
+      const metrics = ctx.measureText(text);
+      const tw = metrics.width;
+      const y = canvas.height - pad;
+      const totalDist = canvas.width + tw;
+      const speed = 0.12;
+      const x = canvas.width - ((t*speed) % totalDist);
+      ctx.textAlign='left'; ctx.textBaseline='bottom';
+      
+      for(let i=0; i<repeat; i++){
+        const offset = (i-Math.floor(repeat/2))*50;
+        if(shadow){
+          ctx.globalAlpha = opacity*0.3;
+          ctx.strokeText(text, x+offset, y+offset+2);
+          ctx.globalAlpha = opacity;
+        }
+        ctx.strokeText(text, x+offset, y+offset);
+        ctx.fillText(text, x+offset, y+offset);
+      }
+    } else if(mode==='fade'){
+      const [x,y,align,baseline] = positionCoords('bc', pad);
+      const pulse = (Math.sin(t*0.0025)+1)/2;
+      ctx.globalAlpha = opacity * (0.2 + 0.8*pulse);
+      ctx.textAlign = align; ctx.textBaseline = baseline;
+      
+      for(let i=0; i<repeat; i++){
+        const offset = (i-Math.floor(repeat/2))*40;
+        if(shadow){
+          ctx.globalAlpha = opacity*0.2 * (0.2 + 0.8*pulse);
+          ctx.strokeText(text, x+offset, y+offset+2);
+        }
+        ctx.globalAlpha = opacity * (0.2 + 0.8*pulse);
+        ctx.strokeText(text, x+offset, y+offset);
+        ctx.fillText(text, x+offset, y+offset);
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawStaticPreview(){
+    if(fileType==='image'){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(srcImage,0,0,canvas.width,canvas.height);
+      paintWatermark(performance.now());
+    }
+  }
+
+  function drawFrame(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(srcVideo,0,0,canvas.width,canvas.height);
+    paintWatermark(performance.now());
+  }
+
+  function restartPreviewAnimation(){
+    cancelAnimationFrame(rafId);
+    if(!fileType) return;
+    if(fileType==='image'){
+      if(mode==='static'){
+        drawStaticPreview();
+        return;
+      }
+      animStart = null;
+      const loop = (ts)=>{
+        if(!animStart) animStart = ts;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(srcImage,0,0,canvas.width,canvas.height);
+        paintWatermark(ts-animStart);
+        rafId = requestAnimationFrame(loop);
+      };
+      rafId = requestAnimationFrame(loop);
+    } else if(fileType==='video'){
+      drawFrame();
+      animStart = null;
+      const loop = (ts)=>{
+        if(!animStart) animStart = ts;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(srcVideo,0,0,canvas.width,canvas.height);
+        paintWatermark(ts-animStart);
+        rafId = requestAnimationFrame(loop);
+      };
+      srcVideo.currentTime = 0;
+      srcVideo.play().catch(()=>{}).then(()=>{
+        rafId = requestAnimationFrame(loop);
+      });
+    }
+  }
+
+  // Export
+  applyBtn.addEventListener('click', async ()=>{
+    if(!fileType) return;
+    applyBtn.classList.add('stamping');
+    setTimeout(()=>applyBtn.classList.remove('stamping'), 600);
+    downloadBox.classList.remove('show');
+    if(fileType==='image') await exportImage();
+    else await exportVideo();
+  });
+
+  async function exportImage(){
+    if(mode==='static'){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(srcImage,0,0,canvas.width,canvas.height);
+      paintWatermark(0);
+      canvas.toBlob((blob)=>{
+        offerDownload(blob, 'watermarked-image.png');
+      }, 'image/png');
+    } else {
+      statusText.textContent = 'جاري إنشاء فيديو...';
+      progress.classList.add('show');
+      const durationMs = 4000;
+      const stream = canvas.captureStream(30);
+      const recorder = pickRecorder(stream);
+      const chunks = [];
+      recorder.ondataavailable = (e)=>{ if(e.data.size>0) chunks.push(e.data); };
+      const done = new Promise(res=>{ recorder.onstop = res; });
+      recorder.start();
+      const start = performance.now();
+      const loop = (ts)=>{
+        const elapsed = ts-start;
+        progressBar.style.width = Math.min(100,(elapsed/durationMs*100))+'%';
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(srcImage,0,0,canvas.width,canvas.height);
+        paintWatermark(elapsed);
+        if(elapsed < durationMs){
+          rafId = requestAnimationFrame(loop);
+        } else {
+          recorder.stop();
+        }
+      };
+      rafId = requestAnimationFrame(loop);
+      await done;
+      const blob = new Blob(chunks, {type: recorder.mimeType || 'video/webm'});
+      progress.classList.remove('show');
+      statusText.textContent = '';
+      offerDownload(blob, 'watermarked-video.webm');
+      restartPreviewAnimation();
+    }
+  }
+
+  function pickRecorder(stream){
+    const options = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+    for(const mt of options){
+      if(MediaRecorder.isTypeSupported(mt)){
+        return new MediaRecorder(stream, {mimeType: mt});
+      }
+    }
+    return new MediaRecorder(stream);
+  }
+
+  async function exportVideo(){
+    statusText.textContent = 'معالجة الفيديو جاري...';
+    progress.classList.add('show');
+    progressBar.style.width='0%';
+    applyBtn.disabled = true;
+
+    srcVideo.pause();
+    srcVideo.currentTime = 0;
+    await new Promise(res=>{ srcVideo.onseeked = res; });
+
+    const canvasStream = canvas.captureStream(30);
+    let combined = canvasStream;
+    try{
+      const vStream = srcVideo.captureStream ? srcVideo.captureStream() : (srcVideo.mozCaptureStream ? srcVideo.mozCaptureStream() : null);
+      if(vStream && vStream.getAudioTracks().length){
+        combined = new MediaStream([...canvasStream.getVideoTracks(), ...vStream.getAudioTracks()]);
+      }
+    }catch(e){}
+
+    const recorder = pickRecorder(combined);
+    const chunks = [];
+    recorder.ondataavailable = (e)=>{ if(e.data.size>0) chunks.push(e.data); };
+    const done = new Promise(res=>{ recorder.onstop = res; });
+
+    recorder.start();
+    animStart = null;
+
+    const loop = (ts)=>{
+      if(!animStart) animStart = ts;
+      const elapsed = ts-animStart;
+      progressBar.style.width = Math.min(100, (srcVideo.currentTime/srcVideo.duration*100))+'%';
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(srcVideo,0,0,canvas.width,canvas.height);
+      paintWatermark(elapsed);
+      if(!srcVideo.ended){
+        rafId = requestAnimationFrame(loop);
+      }
+    };
+
+    srcVideo.onended = ()=>{
+      cancelAnimationFrame(rafId);
+      recorder.stop();
+    };
+
+    await srcVideo.play();
+    rafId = requestAnimationFrame(loop);
+
+    await done;
+    const blob = new Blob(chunks, {type: recorder.mimeType || 'video/webm'});
+    progress.classList.remove('show');
+    statusText.textContent = '';
+    applyBtn.disabled = false;
+    offerDownload(blob, 'watermarked-video.webm');
+    restartPreviewAnimation();
+  }
+
+  function offerDownload(blob, filename){
+    const url = URL.createObjectURL(blob);
+    downloadLink.href = url;
+    downloadLink.download = filename;
+    downloadBox.classList.add('show');
+  }
+
+})();
+</script>
 </body>
 </html>
